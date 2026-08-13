@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chronolog
 
-## Getting Started
+Chronolog is a private, collaborative family-history and storytelling application built with Next.js and Supabase.
 
-First, run the development server:
+## Local development
+
+Install dependencies and start the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application is available at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Supabase authentication configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Set these environment variables locally and in the stable production deployment:
 
-## Learn More
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+NEXT_PUBLIC_SITE_URL=https://your-production-domain.example
+```
 
-To learn more about Next.js, take a look at the following resources:
+`NEXT_PUBLIC_SITE_URL` may be omitted during local development, where it defaults to `http://localhost:3000`. It is required for production builds and must be the stable production origin. Do not set it to an arbitrary Vercel preview URL.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+In the Supabase dashboard:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Enable the Email provider and require email confirmation.
+2. Set the production Site URL to the stable HTTPS production origin.
+3. Allow only the following authentication callback URLs:
+   - `http://localhost:3000/auth/callback`
+   - `https://your-production-domain.example/auth/callback`
+4. Set the minimum password length to 12 characters so backend enforcement matches the application.
+5. Review authentication rate limits and enable compromised-password protection when available.
 
-## Deploy on Vercel
+The browser uses only the publishable key. A Supabase service-role key is not required and must not be exposed to this application.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deferred production configuration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Configure a custom SMTP provider and branded confirmation/password-reset templates before production launch.
+- Google and Apple authentication are outside A-01 and remain deferred.
+- Authentication is intentionally unsupported on arbitrary Vercel preview origins for now.
+
+## Verification
+
+```bash
+npm run lint
+npm run build
+git diff --check
+```
