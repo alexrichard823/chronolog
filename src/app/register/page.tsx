@@ -18,8 +18,11 @@ export default function RegisterPage() {
     const supabase = createClient();
 
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
+    email,
+    password,
+    options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+    },
     });
 
     if (error) {
