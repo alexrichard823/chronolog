@@ -49,6 +49,18 @@ export async function createRelationshipAction(formData: FormData) {
   });
 
   if (error) {
+    if (error.message.includes("ancestry cycle")) {
+      redirect(`${basePath}?error=cycle`);
+    }
+
+    if (error.code === "23505") {
+      redirect(`${basePath}?error=duplicate`);
+    }
+
+    if (error.code === "23514") {
+      redirect(`${basePath}?error=invalid-link`);
+    }
+
     redirect(`${basePath}?error=create-failed`);
   }
 
