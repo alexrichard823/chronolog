@@ -31,5 +31,5 @@ export async function createPerson(formData: FormData) {
     redirect(`/families/${familyId}/people/new?error=create-failed`);
   }
 
-  redirect(`/families/${familyId}?personCreated=1`);
+  redirect(`/families/${familyId}/people?personCreated=1`);
 }
