@@ -57,6 +57,10 @@ create trigger family_memberships_set_updated_at
 before update on public.family_memberships
 for each row execute function public.set_updated_at();
 
+-- Keep exposed public tables closed by default until F-02 adds membership-aware policies.
+alter table public.families enable row level security;
+alter table public.family_memberships enable row level security;
+
 comment on table public.families is
   'Top-level private family archive/workspace.';
 
