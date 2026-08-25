@@ -49,6 +49,10 @@ export async function createRelationshipAction(formData: FormData) {
   });
 
   if (error) {
+    if (error.message.includes("already exists in this family")) {
+      redirect(`${basePath}?error=existing-person`);
+    }
+
     if (error.message.includes("ancestry cycle")) {
       redirect(`${basePath}?error=cycle`);
     }
