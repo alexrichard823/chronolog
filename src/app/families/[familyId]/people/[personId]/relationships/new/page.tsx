@@ -49,15 +49,17 @@ export default async function AddRelationshipPage({
       ? "Choose a relationship type and try again."
       : errorCode === "missing-relative"
         ? "Choose an existing person or enter a new person name."
-        : errorCode === "duplicate"
-          ? "That direct relationship already exists."
-          : errorCode === "cycle"
-            ? "That parent-child relationship would create a circular family line, so it was not added."
-            : errorCode === "invalid-link"
-              ? "That relationship is not valid. A person cannot be directly related to themselves."
-              : errorCode === "create-failed"
-                ? "We could not add that relationship. Check the information and try again."
-                : null;
+        : errorCode === "existing-person"
+          ? "A person with that name already exists in this family. Choose Existing person and connect that record instead of creating another one."
+          : errorCode === "duplicate"
+            ? "That direct relationship already exists."
+            : errorCode === "cycle"
+              ? "That parent-child relationship would create a circular family line, so it was not added."
+              : errorCode === "invalid-link"
+                ? "That relationship is not valid. A person cannot be directly related to themselves."
+                : errorCode === "create-failed"
+                  ? "We could not add that relationship. Check the information and try again."
+                  : null;
 
   return (
     <main className="mx-auto w-full max-w-xl p-8">
