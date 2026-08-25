@@ -4,15 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 
 type FamilyDashboardPageProps = {
   params: Promise<{ familyId: string }>;
-  searchParams: Promise<{ personCreated?: string }>;
 };
 
-export default async function FamilyDashboardPage({
-  params,
-  searchParams,
-}: FamilyDashboardPageProps) {
+export default async function FamilyDashboardPage({ params }: FamilyDashboardPageProps) {
   const { familyId } = await params;
-  const { personCreated } = await searchParams;
   const supabase = await createClient();
 
   const {
@@ -39,12 +34,6 @@ export default async function FamilyDashboardPage({
         Back to your families
       </Link>
 
-      {personCreated === "1" && (
-        <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-          Person added successfully.
-        </p>
-      )}
-
       <section className="mt-6 rounded-xl border p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -57,19 +46,27 @@ export default async function FamilyDashboardPage({
             )}
           </div>
 
-          <Link
-            href={`/families/${familyId}/people/new`}
-            className="rounded bg-black px-4 py-2 text-white"
-          >
-            Add Person
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href={`/families/${familyId}/people`}
+              className="rounded border px-4 py-2"
+            >
+              View People
+            </Link>
+            <Link
+              href={`/families/${familyId}/people/new`}
+              className="rounded bg-black px-4 py-2 text-white"
+            >
+              Add Person
+            </Link>
+          </div>
         </div>
       </section>
 
       <section className="mt-6 rounded-xl border border-dashed p-8 text-center">
         <h2 className="text-xl font-semibold">Your family dashboard is ready</h2>
         <p className="mt-2 text-gray-600">
-          People, stories, events, media, timeline, and tree views will appear here as those features are built.
+          People are available now. Stories, events, media, timeline, and tree views will appear here as those features are built.
         </p>
       </section>
     </main>
