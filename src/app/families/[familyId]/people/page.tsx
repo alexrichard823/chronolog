@@ -66,12 +66,17 @@ export default async function PeoplePage({ params, searchParams }: PeoplePagePro
       ) : people && people.length > 0 ? (
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {people.map((person) => (
-            <article key={person.id} className="rounded-lg border p-5">
+            <Link
+              key={person.id}
+              href={`/families/${familyId}/people/${person.id}`}
+              className="block rounded-lg border p-5 transition hover:bg-gray-50"
+            >
               <h2 className="text-xl font-semibold">{person.display_name}</h2>
               <p className="mt-2 text-sm capitalize text-gray-600">
                 {person.life_status === "unknown" ? "Life status unknown" : person.life_status}
               </p>
-            </article>
+              <p className="mt-4 text-sm font-medium">Open profile</p>
+            </Link>
           ))}
         </div>
       ) : (
