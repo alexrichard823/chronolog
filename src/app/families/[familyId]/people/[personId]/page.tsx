@@ -4,10 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 
 type PersonProfilePageProps = {
   params: Promise<{ familyId: string; personId: string }>;
+  searchParams: Promise<{ relationshipCreated?: string }>;
 };
 
-export default async function PersonProfilePage({ params }: PersonProfilePageProps) {
+export default async function PersonProfilePage({ params, searchParams }: PersonProfilePageProps) {
   const { familyId, personId } = await params;
+  const { relationshipCreated } = await searchParams;
   const supabase = await createClient();
 
   const {
@@ -45,30 +47,45 @@ export default async function PersonProfilePage({ params }: PersonProfilePagePro
         Back to {family.name} people
       </Link>
 
+      {relationshipCreated === "1" && (
+        <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+          Relationship added successfully.
+        </p>
+      )}
+
       <section className="mt-6 rounded-xl border p-6">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-gray-100 text-3xl font-semibold text-gray-500">
-            {person.display_name.charAt(0).toUpperCase()}
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex min-w-0 gap-6">
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-gray-100 text-3xl font-semibold text-gray-500">
+              {person.display_name.charAt(0).toUpperCase()}
+            </div>
+
+            <div className="min-w-0">
+              <p className="text-sm font-medium uppercase tracking-wide text-gray-500">
+                Person profile
+              </p>
+              <h1 className="mt-1 text-3xl font-semibold">{person.display_name}</h1>
+
+              {componentName && componentName !== person.display_name && (
+                <p className="mt-2 text-gray-600">{componentName}</p>
+              )}
+
+              {person.nickname && (
+                <p className="mt-1 text-gray-600">Nickname: {person.nickname}</p>
+              )}
+
+              <p className="mt-3 text-sm capitalize text-gray-600">
+                {person.life_status === "unknown" ? "Life status unknown" : person.life_status}
+              </p>
+            </div>
           </div>
 
-          <div className="min-w-0">
-            <p className="text-sm font-medium uppercase tracking-wide text-gray-500">
-              Person profile
-            </p>
-            <h1 className="mt-1 text-3xl font-semibold">{person.display_name}</h1>
-
-            {componentName && componentName !== person.display_name && (
-              <p className="mt-2 text-gray-600">{componentName}</p>
-            )}
-
-            {person.nickname && (
-              <p className="mt-1 text-gray-600">Nickname: {person.nickname}</p>
-            )}
-
-            <p className="mt-3 text-sm capitalize text-gray-600">
-              {person.life_status === "unknown" ? "Life status unknown" : person.life_status}
-            </p>
-          </div>
+          <Link
+            href={`/families/${familyId}/people/${personId}/relationships/new`}
+            className="shrink-0 rounded bg-black px-4 py-2 text-white"
+          >
+            Add Relationship
+          </Link>
         </div>
       </section>
 
