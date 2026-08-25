@@ -4,12 +4,15 @@ import { createClient } from "@/lib/supabase/server";
 
 type FamilyDashboardPageProps = {
   params: Promise<{ familyId: string }>;
+  searchParams: Promise<{ personCreated?: string }>;
 };
 
 export default async function FamilyDashboardPage({
   params,
+  searchParams,
 }: FamilyDashboardPageProps) {
   const { familyId } = await params;
+  const { personCreated } = await searchParams;
   const supabase = await createClient();
 
   const {
@@ -36,6 +39,12 @@ export default async function FamilyDashboardPage({
         Back to your families
       </Link>
 
+      {personCreated === "1" && (
+        <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+          Person added successfully.
+        </p>
+      )}
+
       <section className="mt-6 rounded-xl border p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -48,14 +57,12 @@ export default async function FamilyDashboardPage({
             )}
           </div>
 
-          <button
-            type="button"
-            disabled
-            title="Person creation is the next family-space task"
-            className="rounded bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
+          <Link
+            href={`/families/${familyId}/people/new`}
+            className="rounded bg-black px-4 py-2 text-white"
           >
             Add Person
-          </button>
+          </Link>
         </div>
       </section>
 
