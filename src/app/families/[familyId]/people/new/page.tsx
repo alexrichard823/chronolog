@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createPerson } from "../actions";
+import DateFields from "./date-fields";
 
 type NewPersonPageProps = {
   params: Promise<{ familyId: string }>;
@@ -34,19 +35,22 @@ export default async function NewPersonPage({ params, searchParams }: NewPersonP
   const errorMessage =
     errorCode === "missing-name"
       ? "Enter a name for this person."
-      : errorCode === "create-failed"
-        ? "We could not add this person. Check your access and try again."
-        : null;
+      : errorCode === "invalid-date"
+        ? "Check the birth and death date information and try again."
+        : errorCode === "create-failed"
+          ? "We could not add this person. Check your access and try again."
+          : null;
 
   return (
     <main className="mx-auto w-full max-w-xl p-8">
-      <Link href={`/families/${familyId}`} className="text-sm underline">
-        Back to {family.name}
+      <Link href={`/families/${familyId}/people`} className="text-sm underline">
+        Back to {family.name} people
       </Link>
 
       <h1 className="mt-6 text-3xl font-semibold">Add Person</h1>
       <p className="mt-2 text-gray-600">
-        Add someone to {family.name}. A name is the only required field.
+        Add someone to {family.name}. A name is the only required information; dates can be exact,
+        year-only, approximate, or unknown.
       </p>
 
       {errorMessage && (
@@ -74,11 +78,14 @@ export default async function NewPersonPage({ params, searchParams }: NewPersonP
           />
         </div>
 
+        <DateFields prefix="birth" label="Birth date" />
+        <DateFields prefix="death" label="Death date" />
+
         <div className="flex gap-3">
           <button type="submit" className="rounded bg-black px-4 py-2 text-white">
             Add person
           </button>
-          <Link href={`/families/${familyId}`} className="rounded border px-4 py-2">
+          <Link href={`/families/${familyId}/people`} className="rounded border px-4 py-2">
             Cancel
           </Link>
         </div>
