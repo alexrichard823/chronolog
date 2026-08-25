@@ -39,12 +39,17 @@ export default async function FamiliesPage() {
       ) : families && families.length > 0 ? (
         <div className="mt-8 grid gap-4">
           {families.map((family) => (
-            <article key={family.id} className="rounded-lg border p-5">
+            <Link
+              key={family.id}
+              href={`/families/${family.id}`}
+              className="block rounded-lg border p-5 transition hover:bg-gray-50"
+            >
               <h2 className="text-xl font-semibold">{family.name}</h2>
               {family.description && (
                 <p className="mt-2 text-gray-600">{family.description}</p>
               )}
-            </article>
+              <p className="mt-4 text-sm font-medium">Open family</p>
+            </Link>
           ))}
         </div>
       ) : (
