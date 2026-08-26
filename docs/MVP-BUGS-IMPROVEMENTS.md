@@ -38,6 +38,8 @@ Before pilot launch and again before declaring the MVP complete, review every op
 | --- | --- | --- | --- | --- | --- | --- |
 | IMP-001 | Security | High | Open | Phase 6 review | Enable Supabase leaked-password protection before pilot | Supabase Auth's leaked-password protection is currently disabled. Before inviting pilot users, enable the feature so compromised passwords are checked against known breached-password data. This is a pre-pilot security requirement, not a Phase 6 functional blocker. |
 | IMP-002 | UX / Permissions | Medium | Open | Phase 6 review | Hide mutation controls from Viewer accounts | Database RLS already prevents Viewer accounts from creating or modifying protected family content, but controls such as **Add Event** and **Add Story** may still be visible. Hide actions that the current role cannot perform while retaining backend/RLS enforcement as the real security boundary. |
+| IMP-003 | Relationships / UX | High | Open | Phase 6 testing | Allow existing relationships to be edited or removed | After a relationship is created, users currently cannot correct it if the relationship type or linked person is wrong. Add relationship edit and delete/remove controls with the same role authorization and validation used for relationship creation. This also closes an explicit PRD requirement to remove incorrect relationships. |
+| IMP-004 | Events & Stories / UX | Medium | Open | Phase 6 testing | Show only date fields relevant to the selected date type | The Event and Story forms currently display exact-date, approximate-year, and date-range inputs at the same time. When the user chooses a date type/precision, dynamically show only the inputs required for that choice (for example, Exact → one date field; Approximate → approximate date/year fields; Range → start/end fields; Unknown → no date input). This should reduce clutter and prevent users from entering conflicting date values. |
 
 ---
 
@@ -62,3 +64,4 @@ Review all remaining open items and make an explicit decision for each: **Comple
 ## Change log
 
 - **2026-08-26** — Tracker created after Phase 6 functional acceptance. Added Supabase leaked-password protection and Viewer-role UI permission improvements.
+- **2026-08-26** — Added relationship edit/remove support and conditional date-field rendering for Event and Story forms based on Phase 6 testing feedback.
