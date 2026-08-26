@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FamilyTree, type FamilyCardProps } from "@memoir/tree";
 import type { ChronologTreePerson } from "@/lib/family-tree";
 import { buildChronologFamilyGraph, type TreePersonRecord, type TreeRelationshipRecord } from "@/lib/family-tree";
@@ -15,7 +15,24 @@ type Props = {
   subjectId: string;
 };
 
-function PersonCard({ person, relation, selected, ...rootProps }: FamilyCardProps<ChronologTreePerson>) {
+type PersonCardExtraProps = {
+  onSelect: (personId: string) => void;
+};
+
+function PersonCard({
+  person,
+  personId,
+  relation,
+  selected,
+  focused: _focused,
+  collapsed: _collapsed,
+  readOnly: _readOnly,
+  metadata: _metadata,
+  placement: _placement,
+  onAddRelationship: _onAddRelationship,
+  onSelect,
+  ...rootProps
+}: FamilyCardProps<ChronologTreePerson> & PersonCardExtraProps) {
   const initials = person.display_name
     .split(/\s+/)
     .filter(Boolean)
@@ -24,8 +41,10 @@ function PersonCard({ person, relation, selected, ...rootProps }: FamilyCardProp
     .join("");
 
   return (
-    <article
+    <button
       {...rootProps}
+      type="button"
+      onClick={() => onSelect(personId)}
       className={`min-w-44 cursor-pointer rounded-xl border bg-white px-4 py-3 text-left shadow-sm transition hover:border-gray-500 ${selected ? "border-black ring-2 ring-black/10" : "border-gray-300"}`}
     >
       <div className="flex items-center gap-3">
@@ -38,7 +57,7 @@ function PersonCard({ person, relation, selected, ...rootProps }: FamilyCardProp
         </div>
       </div>
       <p className="mt-2 text-[11px] capitalize tracking-wide text-gray-400">{relation.label.replaceAll("-", " ")}</p>
-    </article>
+    </button>
   );
 }
 
@@ -46,6 +65,10 @@ export function TreeView({ familyId, familyName, people, relationships, subjectI
   const router = useRouter();
   const [selectedId, setSelectedId] = useState(subjectId);
   const [zoom, setZoom] = useState(1);
+
+  useEffect(() => {
+    setSelectedId(subjectId);
+  }, [subjectId]);
 
   const graph = useMemo(
     () => buildChronologFamilyGraph({ people, relationships, subjectId }),
@@ -84,16 +107,16 @@ export function TreeView({ familyId, familyName, people, relationships, subjectI
               transformOrigin: "center center",
             }}
           >
-            <FamilyTree
+            <FamilyTree<ChronologTreePerson, PersonCardExtraProps>
               graph={graph}
               card={PersonCard}
+              cardProps={{ onSelect: setSelectedId }}
               interactionMode="pan-page-scroll"
               initialViewport="subject"
               layoutMode="compact-family"
               limits={{ ancestorGenerations: 3, descendantGenerations: 2, lateralFamilyGenerations: 1, partners: null }}
               spacing={{ row: 112, column: 36, padding: 48 }}
               selected={selectedId}
-              onPersonClick={(_, personId) => setSelectedId(personId)}
               ariaLabel={`${familyName} family tree`}
             />
           </div>
