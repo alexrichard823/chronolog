@@ -101,9 +101,12 @@ export function buildChronologFamilyGraph({
   const parentChildRelationships = relationships.filter(
     (relationship) => relationship.relationship_type === "parent_child",
   );
+  const lineageRelationships = parentChildRelationships.filter(
+    (relationship) => relationship.parent_child_subtype !== "guardian",
+  );
 
   const parentsByChild = new Map<string, TreeRelationshipRecord[]>();
-  for (const relationship of parentChildRelationships) {
+  for (const relationship of lineageRelationships) {
     const existing = parentsByChild.get(relationship.person_b_id) ?? [];
     existing.push(relationship);
     parentsByChild.set(relationship.person_b_id, existing);
@@ -130,6 +133,17 @@ export function buildChronologFamilyGraph({
   const parentChildLinks: FamilyParentChildLink[] = [];
 
   for (const relationship of parentChildRelationships) {
+    if (relationship.parent_child_subtype === "guardian") {
+      guardianshipLinks.push({
+        id: relationship.id,
+        guardianId: relationship.person_a_id,
+        childId: relationship.person_b_id,
+        relation: "guardian",
+        status: "current",
+      });
+      continue;
+    }
+
     const parentLinksForChild = parentsByChild.get(relationship.person_b_id) ?? [];
     let groupId: string | undefined;
 
@@ -138,18 +152,6 @@ export function buildChronologFamilyGraph({
       const key = pairKey(relationship.person_a_id, other.person_a_id);
       groupId = explicitGroupByPair.get(key) ?? inferredCoparentGroups.get(key);
       if (groupId) break;
-    }
-
-    if (relationship.parent_child_subtype === "guardian") {
-      guardianshipLinks.push({
-        id: relationship.id,
-        groupId,
-        guardianId: relationship.person_a_id,
-        childId: relationship.person_b_id,
-        relation: "guardian",
-        status: "current",
-      });
-      continue;
     }
 
     parentChildLinks.push({
