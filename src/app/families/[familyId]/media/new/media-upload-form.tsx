@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { MEDIA_BUCKET, type MediaType } from "@/lib/media";
+import { MEDIA_BUCKET, type MediaType } from "@/lib/media-config";
 
 type Option = { id: string; label: string };
 
