@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { updatePerson } from "../../../actions";
-import DateFields from "../../../new/date-fields";
+import { updatePerson } from "../../actions";
+import DateFields from "../../new/date-fields";
 
 type Props = {
   params: Promise<{ familyId: string; personId: string }>;
