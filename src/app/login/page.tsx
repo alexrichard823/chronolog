@@ -5,6 +5,11 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+function safeNextPath() {
+  const value = new URLSearchParams(window.location.search).get("next");
+  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/families";
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -14,16 +19,11 @@ export default function LoginPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     setLoading(true);
     setMessage("");
 
     const supabase = createClient();
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setMessage(error.message);
@@ -31,7 +31,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/families");
+    router.push(safeNextPath());
     router.refresh();
   }
 
@@ -45,42 +45,17 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1 block">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              className="w-full rounded border px-3 py-2"
-            />
+            <label htmlFor="email" className="mb-1 block">Email</label>
+            <input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required className="w-full rounded border px-3 py-2" />
           </div>
-
           <div>
-            <label htmlFor="password" className="mb-1 block">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              className="w-full rounded border px-3 py-2"
-            />
+            <label htmlFor="password" className="mb-1 block">Password</label>
+            <input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required className="w-full rounded border px-3 py-2" />
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-          >
+          <button type="submit" disabled={loading} className="w-full rounded bg-black px-4 py-2 text-white disabled:opacity-50">
             {loading ? "Logging in..." : "Log in"}
           </button>
         </form>
-
         {message && <p className="mt-4">{message}</p>}
       </div>
     </main>
