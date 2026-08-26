@@ -7,10 +7,21 @@ type Precision = "unknown" | "exact" | "year" | "approximate";
 type DateFieldsProps = {
   prefix: "birth" | "death";
   label: string;
+  initialPrecision?: string | null;
+  initialDateStart?: string | null;
 };
 
-export default function DateFields({ prefix, label }: DateFieldsProps) {
-  const [precision, setPrecision] = useState<Precision>("unknown");
+export default function DateFields({
+  prefix,
+  label,
+  initialPrecision = "unknown",
+  initialDateStart = null,
+}: DateFieldsProps) {
+  const normalizedInitial = ["unknown", "exact", "year", "approximate"].includes(initialPrecision ?? "")
+    ? (initialPrecision as Precision)
+    : "unknown";
+  const [precision, setPrecision] = useState<Precision>(normalizedInitial);
+  const initialYear = initialDateStart?.slice(0, 4) ?? "";
 
   return (
     <fieldset className="rounded-lg border p-4">
@@ -42,6 +53,7 @@ export default function DateFields({ prefix, label }: DateFieldsProps) {
             name={`${prefix}ExactDate`}
             type="date"
             required
+            defaultValue={normalizedInitial === "exact" ? initialDateStart ?? "" : ""}
             className="mt-2 w-full rounded border px-3 py-2"
           />
         </div>
@@ -60,6 +72,7 @@ export default function DateFields({ prefix, label }: DateFieldsProps) {
             max="9999"
             inputMode="numeric"
             required
+            defaultValue={normalizedInitial === precision ? initialYear : ""}
             className="mt-2 w-full rounded border px-3 py-2"
             placeholder="1930"
           />
