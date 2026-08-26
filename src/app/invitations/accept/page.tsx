@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { acceptInvitation } from "./actions";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 type Props = {
   searchParams: Promise<{ token?: string; error?: string }>;
