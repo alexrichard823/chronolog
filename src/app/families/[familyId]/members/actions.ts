@@ -62,8 +62,7 @@ export async function inviteFamilyMember(formData: FormData) {
   }
 
   const origin = await requestOrigin();
-  const nextPath = `/invitations/accept?token=${encodeURIComponent(rawToken)}`;
-  const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+  const callbackUrl = `${origin}/invitations/auth?token=${encodeURIComponent(rawToken)}`;
   const mailClient = createSupabaseJsClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
