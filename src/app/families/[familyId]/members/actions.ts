@@ -4,7 +4,6 @@ import { createHash, randomBytes } from "node:crypto";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient as createSupabaseJsClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 const MANAGED_ROLES = new Set(["admin", "editor", "viewer"]);
@@ -21,6 +20,8 @@ async function requireUser() {
 }
 
 async function requestOrigin() {
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+
   const requestHeaders = await headers();
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host?.includes("localhost") ? "http" : "https");
@@ -61,17 +62,20 @@ export async function inviteFamilyMember(formData: FormData) {
     redirect(membersPath(familyId, `error=${invitationErrorCode(createError?.message ?? "")}`));
   }
 
-  const origin = await requestOrigin();
-  const callbackUrl = `${origin}/invitations/auth?token=${encodeURIComponent(rawToken)}`;
-  const mailClient = createSupabaseJsClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } },
-  );
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    await supabase.rpc("revoke_family_invitation", { target_invitation_id: invitationId });
+    redirect("/login");
+  }
 
-  const { error: emailError } = await mailClient.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: callbackUrl, shouldCreateUser: true },
+  supabase.functions.setAuth(session.access_token);
+  const origin = await requestOrigin();
+  const { error: emailError } = await supabase.functions.invoke("send-family-invitation", {
+    body: {
+      invitationId,
+      rawToken,
+      origin,
+    },
   });
 
   if (emailError) {
