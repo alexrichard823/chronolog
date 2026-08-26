@@ -2,12 +2,8 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { safeInternalPath } from "@/lib/auth/safe-next";
 import { createClient } from "@/lib/supabase/client";
-
-function safeNextPath() {
-  const value = new URLSearchParams(window.location.search).get("next");
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/families";
-}
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -21,7 +17,7 @@ export default function RegisterPage() {
     setMessage("");
 
     const supabase = createClient();
-    const nextPath = safeNextPath();
+    const nextPath = safeInternalPath(new URLSearchParams(window.location.search).get("next"));
     const callbackUrl = `${window.location.origin}/auth/callback${nextPath === "/families" ? "" : `?next=${encodeURIComponent(nextPath)}`}`;
     const { error } = await supabase.auth.signUp({
       email,
