@@ -92,8 +92,7 @@ Deno.serve(async (req) => {
 
   if (!inviteError) return json({ delivered: true, account: "new" });
 
-  const inviteFailure = `${inviteError.code ?? ""} ${inviteError.message ?? ""}`.toLowerCase();
-  const alreadyExists = inviteFailure.includes("already") || inviteFailure.includes("registered") || inviteFailure.includes("exists");
+  const alreadyExists = inviteError.code === "email_exists" || inviteError.code === "user_already_exists";
   if (!alreadyExists) return json({ error: "Supabase invitation email failed" }, 502);
 
   const publicClient = createClient(supabaseUrl, anonKey, {
