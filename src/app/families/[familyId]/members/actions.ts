@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 const MANAGED_ROLES = new Set(["admin", "editor", "viewer"]);
+const PRODUCTION_ORIGIN = "https://chronolog-amber.vercel.app";
 
 function membersPath(familyId: string, params = "") {
   return `/families/${familyId}/members${params ? `?${params}` : ""}`;
@@ -20,7 +21,7 @@ async function requireUser() {
 }
 
 async function requestOrigin() {
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (process.env.VERCEL) return PRODUCTION_ORIGIN;
 
   const requestHeaders = await headers();
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
