@@ -114,36 +114,39 @@ export default async function FamilyMembersPage({ params, searchParams }: Props)
       <section className="mt-8 rounded-xl border p-6">
         <h2 className="text-xl font-semibold">Current members</h2>
         <div className="mt-5 space-y-4">
-          {members.map((member) => (
-            <div key={member.user_id} className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-medium">{member.email}{member.user_id === user.id ? " (you)" : ""}</p>
-                <p className="mt-1 text-sm text-gray-500">{roleLabel(member.role)} · Joined {new Date(member.joined_at).toLocaleDateString()}</p>
-              </div>
-              {member.role === "owner" ? (
-                <span className="text-sm font-medium text-gray-500">Owner role is protected</span>
-              ) : (
-                <div className="flex flex-wrap items-center gap-3">
-                  <form action={updateMemberRole} className="flex items-center gap-2">
-                    <input type="hidden" name="familyId" value={familyId} />
-                    <input type="hidden" name="userId" value={member.user_id} />
-                    <select name="role" defaultValue={member.role} aria-label={`Role for ${member.email}`} className="rounded border px-3 py-2 text-sm">
-                      <option value="admin">Admin</option>
-                      <option value="editor">Editor</option>
-                      <option value="viewer">Viewer</option>
-                    </select>
-                    <button type="submit" className="rounded border px-3 py-2 text-sm">Update</button>
-                  </form>
-                  <ConfirmDeleteButton
-                    action={removeMember}
-                    fields={{ familyId, userId: member.user_id }}
-                    confirmMessage={member.user_id === user.id ? "Remove yourself from this family? You will immediately lose access." : `Remove ${member.email} from this family? Their new family and private-media access will stop immediately.`}
-                    label={member.user_id === user.id ? "Leave family" : "Remove"}
-                  />
+          {members.map((member) => {
+            const isCurrentUser = member.user_id === user.id;
+            return (
+              <div key={member.user_id} className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-medium">{member.email}{isCurrentUser ? " (you)" : ""}</p>
+                  <p className="mt-1 text-sm text-gray-500">{roleLabel(member.role)} · Joined {new Date(member.joined_at).toLocaleDateString()}</p>
                 </div>
-              )}
-            </div>
-          ))}
+                {member.role === "owner" ? (
+                  <span className="text-sm font-medium text-gray-500">Owner role is protected</span>
+                ) : isCurrentUser ? (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-sm text-gray-500">You cannot change your own role.</span>
+                    <ConfirmDeleteButton action={removeMember} fields={{ familyId, userId: member.user_id }} confirmMessage="Leave this family? You will immediately lose access." label="Leave family" />
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <form action={updateMemberRole} className="flex items-center gap-2">
+                      <input type="hidden" name="familyId" value={familyId} />
+                      <input type="hidden" name="userId" value={member.user_id} />
+                      <select name="role" defaultValue={member.role} aria-label={`Role for ${member.email}`} className="rounded border px-3 py-2 text-sm">
+                        <option value="admin">Admin</option>
+                        <option value="editor">Editor</option>
+                        <option value="viewer">Viewer</option>
+                      </select>
+                      <button type="submit" className="rounded border px-3 py-2 text-sm">Update</button>
+                    </form>
+                    <ConfirmDeleteButton action={removeMember} fields={{ familyId, userId: member.user_id }} confirmMessage={`Remove ${member.email} from this family? Their new family and private-media access will stop immediately.`} label="Remove" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 
