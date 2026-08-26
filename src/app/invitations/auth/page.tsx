@@ -13,7 +13,9 @@ export default function InvitationAuthBridgePage() {
     let cancelled = false;
 
     async function finishSignIn() {
-      const token = new URLSearchParams(window.location.search).get("token");
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      const isNewAccount = params.get("new") === "1";
       if (!token) {
         router.replace("/invitations/accept?error=invalid");
         return;
@@ -54,7 +56,10 @@ export default function InvitationAuthBridgePage() {
         return;
       }
 
-      router.replace(`/invitations/accept?token=${encodeURIComponent(token)}`);
+      const destination = isNewAccount
+        ? `/invitations/setup?token=${encodeURIComponent(token)}`
+        : `/invitations/accept?token=${encodeURIComponent(token)}`;
+      router.replace(destination);
       router.refresh();
     }
 
