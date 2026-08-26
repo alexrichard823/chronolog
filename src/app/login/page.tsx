@@ -3,12 +3,8 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { safeInternalPath } from "@/lib/auth/safe-next";
 import { createClient } from "@/lib/supabase/client";
-
-function safeNextPath() {
-  const value = new URLSearchParams(window.location.search).get("next");
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/families";
-}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,7 +27,8 @@ export default function LoginPage() {
       return;
     }
 
-    router.push(safeNextPath());
+    const nextPath = safeInternalPath(new URLSearchParams(window.location.search).get("next"));
+    router.push(nextPath);
     router.refresh();
   }
 
