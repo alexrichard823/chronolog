@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { safeInternalPath } from "@/lib/auth/safe-next";
 import { createClient } from "@/lib/supabase/client";
 
 export default function RegisterPage() {
@@ -12,18 +13,16 @@ export default function RegisterPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     setLoading(true);
     setMessage("");
 
     const supabase = createClient();
-
+    const nextPath = safeInternalPath(new URLSearchParams(window.location.search).get("next"));
+    const callbackUrl = `${window.location.origin}/auth/callback${nextPath === "/families" ? "" : `?next=${encodeURIComponent(nextPath)}`}`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { emailRedirectTo: callbackUrl },
     });
 
     if (error) {
@@ -33,7 +32,6 @@ export default function RegisterPage() {
       setEmail("");
       setPassword("");
     }
-
     setLoading(false);
   }
 
@@ -47,43 +45,17 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1 block">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              className="w-full rounded border px-3 py-2"
-            />
+            <label htmlFor="email" className="mb-1 block">Email</label>
+            <input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required className="w-full rounded border px-3 py-2" />
           </div>
-
           <div>
-            <label htmlFor="password" className="mb-1 block">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              minLength={12}
-              className="w-full rounded border px-3 py-2"
-            />
+            <label htmlFor="password" className="mb-1 block">Password</label>
+            <input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={12} className="w-full rounded border px-3 py-2" />
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-          >
+          <button type="submit" disabled={loading} className="w-full rounded bg-black px-4 py-2 text-white disabled:opacity-50">
             {loading ? "Creating account..." : "Create account"}
           </button>
         </form>
-
         {message && <p className="mt-4">{message}</p>}
       </div>
     </main>

@@ -4,11 +4,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 type Props = {
-  searchParams: Promise<{ familyDeleted?: string; warning?: string; error?: string }>;
+  searchParams: Promise<{ familyDeleted?: string; leftFamily?: string; warning?: string; error?: string }>;
 };
 
 export default async function FamiliesPage({ searchParams }: Props) {
-  const { familyDeleted, warning, error: errorCode } = await searchParams;
+  const { familyDeleted, leftFamily, warning, error: errorCode } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -26,6 +26,7 @@ export default async function FamiliesPage({ searchParams }: Props) {
       </div>
 
       {familyDeleted === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Family archive deleted successfully.</p>}
+      {leftFamily === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">You left the family and no longer have access to it.</p>}
       {warning === "media-cleanup" && <p className="mt-4 rounded border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">The archive records were deleted, but one or more private media files could not be cleaned up automatically. They are no longer visible in Chronolog.</p>}
       {errorCode === "delete-failed" && <p className="mt-6 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700">We could not delete that family archive.</p>}
 
