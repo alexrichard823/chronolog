@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 const MANAGED_ROLES = new Set(["admin", "editor", "viewer"]);
-const PRODUCTION_ORIGIN = "https://chronolog-amber.vercel.app";
+const PRODUCTION_ORIGIN = "https://getchronolog.com";
 
 function membersPath(familyId: string, params = "") {
   return `/families/${familyId}/members${params ? `?${params}` : ""}`;
