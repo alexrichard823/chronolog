@@ -29,7 +29,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-018 | Product / Brand | Low | Open | Perform formal Chronolog name/domain collision check | Complete before meaningful marketing spend. |
 | IMP-019 | Homepage / Onboarding | Medium | Open | Improve first-time onboarding | Pilot feedback should drive clearer archive setup guidance. |
 | IMP-020 | Reliability / Operations | Medium | Planned | Define production monitoring and restore procedure | Document outage/log/backup recovery and run a restore drill when infrastructure supports it. |
-| IMP-033 | Collaboration / Permissions | High | In progress | Owner invitation rejected after Owner-only member-management change | Owner could create the invitation record but delivery authorization could reject the request because the Edge Function permission check depended on an RLS-filtered membership read. Updated the function to verify the caller JWT, then check the caller's Owner role with the service-role client. Supabase Edge Function version 4 deployed; awaiting production re-test. |
+| IMP-033 | Collaboration / Permissions | High | In progress | Owner invitation rejected after Owner-only member-management change | Root cause corrected in the database: the PL/pgSQL variable `current_role` conflicted with PostgreSQL's `CURRENT_ROLE` special value, so an actual family Owner could be rejected. Renamed the variable to `actor_family_role` in invite, revoke, role-change, and removal checks. Edge Function v4 remains Owner-only. Awaiting production re-test. |
 
 ## Completed items
 
@@ -78,4 +78,5 @@ Whenever development, QA, architecture review, or pilot feedback reveals a real 
 - **2026-08-28** — Added IMP-031 after Chrome blocked embedded PDF previews during upload QA.
 - **2026-08-28** — Marked IMP-031 and the upload boundary/error gate completed after all upload tests passed in production.
 - **2026-08-28** — Added and implemented IMP-032: shared member/invitation visibility with Owner-only membership management.
-- **2026-08-28** — Added IMP-033 after Owner invitations were rejected during Owner-only permission regression; Edge Function authorization fix deployed as version 4.
+- **2026-08-28** — Added IMP-033 after Owner invitations were rejected during Owner-only permission regression.
+- **2026-08-28** — Corrected IMP-033 root cause: renamed the conflicting `current_role` PL/pgSQL variable across Owner-only management checks and applied the fix to Supabase.
