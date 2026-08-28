@@ -29,6 +29,31 @@ async function requestOrigin() {
   return `${protocol}://${host}`;
 }
 
+async function logInvitationDeliveryError(error: unknown) {
+  if (!error || typeof error !== "object") {
+    console.error("Failed to send family invitation email", error);
+    return;
+  }
+
+  const context = "context" in error ? (error as { context?: unknown }).context : undefined;
+  if (context instanceof Response) {
+    let body = "";
+    try {
+      body = await context.clone().text();
+    } catch {
+      body = "<unreadable response body>";
+    }
+    console.error("Failed to send family invitation email", {
+      status: context.status,
+      statusText: context.statusText,
+      body,
+    });
+    return;
+  }
+
+  console.error("Failed to send family invitation email", error);
+}
+
 function invitationErrorCode(message: string) {
   const text = message.toLowerCase();
   if (text.includes("already a member")) return "already-member";
@@ -63,7 +88,7 @@ export async function inviteFamilyMember(formData: FormData) {
   const origin = await requestOrigin();
   const { error: emailError } = await supabase.functions.invoke("send-family-invitation", { body: { invitationId, rawToken, origin } });
   if (emailError) {
-    console.error("Failed to send family invitation email", emailError);
+    await logInvitationDeliveryError(emailError);
     await supabase.rpc("revoke_family_invitation", { target_invitation_id: invitationId });
     redirect(membersPath(familyId, "error=email-send-failed"));
   }
