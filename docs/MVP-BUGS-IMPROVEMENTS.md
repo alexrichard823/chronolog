@@ -29,7 +29,8 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-018 | Product / Brand | Low | Open | Perform formal Chronolog name/domain collision check | Complete before meaningful marketing spend. |
 | IMP-019 | Homepage / Onboarding | Medium | Open | Improve first-time onboarding | Pilot feedback should drive clearer archive setup guidance. |
 | IMP-020 | Reliability / Operations | Medium | Planned | Define production monitoring and restore procedure | Document outage/log/backup recovery and run a restore drill when infrastructure supports it. |
-| IMP-033 | Collaboration / Permissions | High | In progress | Owner invitation rejected after Owner-only member-management change | Root cause corrected in the database: the PL/pgSQL variable `current_role` conflicted with PostgreSQL's `CURRENT_ROLE` special value, so an actual family Owner could be rejected. Renamed the variable to `actor_family_role` in invite, revoke, role-change, and removal checks. Edge Function v4 remains Owner-only. Awaiting production re-test. |
+| IMP-033 | Collaboration / Permissions | High | In progress | Owner invitation rejected after Owner-only member-management change | Database Owner authorization bug fixed by renaming the conflicting PL/pgSQL `current_role` variable to `actor_family_role`. Owner invitation records now create successfully; continue regression until end-to-end delivery passes. |
+| IMP-034 | Collaboration / Email | High | In progress | Existing-account invitation incorrectly treated as email-delivery failure | Confirmed the Viewer address already has a Chronolog account. The Edge Function only recognized a narrow pair of Supabase existing-user error codes, then revoked the invitation. Expanded existing-user detection and deployed Edge Function v5 so confirmed users fall back to the secure OTP invitation path. Awaiting production re-test. |
 
 ## Completed items
 
@@ -59,7 +60,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | Two-account collaboration acceptance test | Completed | Invite, contribute, remove, revoke passed under the earlier Owner/Admin management rule; Owner-only management now needs regression verification. |
 | Mobile browser smoke test | Completed | Mobile navigation, person/event/story editing, tree controls, media viewing, responsive forms/actions, destructive confirmation UI, Privacy, and Terms passed after IMP-029/030 fixes. |
 | Upload boundary/error test | Completed | Valid image/PDF/audio/video, unsupported types, size limits, linking, deletion, and PDF browser preview all passed after IMP-031 fix. |
-| Role/permission regression test | In progress | Verify Owner invitation works after IMP-033; all roles can view Members/invitations while only Owner can manage membership; recheck content permissions and access removal. |
+| Role/permission regression test | In progress | Verify Owner invitation delivery after IMP-033/034; all roles can view Members/invitations while only Owner can manage membership; recheck content permissions and access removal. |
 | Archive deletion recovery decision | Open | Resolve IMP-010 or explicitly accept pilot risk. |
 | Preview/production data separation | Open | Resolve IMP-011 before development continues against valuable real-family production data. |
 | One real-family unassisted pilot | Open | Required by PRD Definition of Done. |
@@ -79,4 +80,5 @@ Whenever development, QA, architecture review, or pilot feedback reveals a real 
 - **2026-08-28** — Marked IMP-031 and the upload boundary/error gate completed after all upload tests passed in production.
 - **2026-08-28** — Added and implemented IMP-032: shared member/invitation visibility with Owner-only membership management.
 - **2026-08-28** — Added IMP-033 after Owner invitations were rejected during Owner-only permission regression.
-- **2026-08-28** — Corrected IMP-033 root cause: renamed the conflicting `current_role` PL/pgSQL variable across Owner-only management checks and applied the fix to Supabase.
+- **2026-08-28** — Corrected IMP-033 database root cause: renamed the conflicting `current_role` PL/pgSQL variable across Owner-only management checks and applied the fix to Supabase.
+- **2026-08-28** — Added IMP-034 after an existing confirmed account was misclassified as a new-user invitation failure; Edge Function v5 now uses robust existing-user fallback detection.
