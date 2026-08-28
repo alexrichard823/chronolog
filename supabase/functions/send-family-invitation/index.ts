@@ -18,7 +18,12 @@ function allowedOrigin(value: string) {
     const url = new URL(value);
     if (url.protocol === "http:" && ["localhost", "127.0.0.1"].includes(url.hostname)) return url.origin;
     if (url.protocol !== "https:") return null;
-    if (url.hostname === "chronolog-amber.vercel.app" || url.hostname.endsWith("-chronolog1.vercel.app")) return url.origin;
+    if (
+      url.hostname === "getchronolog.com" ||
+      url.hostname === "www.getchronolog.com" ||
+      url.hostname === "chronolog-amber.vercel.app" ||
+      url.hostname.endsWith("-chronolog1.vercel.app")
+    ) return url.origin;
     return null;
   } catch {
     return null;
