@@ -23,7 +23,7 @@ This checklist implements Phase 10 of the MVP PRD: mobile testing, permission te
 
 - [x] Verify a fresh invitation email link opens on `getchronolog.com` and completes acceptance after the Site URL change.
 - [x] Run the mobile browser smoke test below on at least one real mobile browser; all listed checks passed after fixing the registration and relationship-edit issues discovered during testing.
-- [ ] Run upload boundary tests below.
+- [x] Run upload boundary tests below; all listed checks passed after fixing the Chrome PDF preview issue.
 - [ ] Run the complete two-account MVP acceptance test on the release candidate.
 - [ ] Decide whether the current immediate archive-delete implementation is acceptable for the first pilot or implement the architecture-recommended re-auth + recovery window first.
 - [ ] Establish a separate Preview/testing backend before development resumes against real pilot data.
@@ -74,6 +74,8 @@ For each representative type:
 3. Attempt a file just over the configured limit and confirm the UI rejects it before upload.
 4. Confirm a successful media item can link to people/events/stories.
 5. Confirm deleting the media item removes active access to the object.
+
+**Result:** Passed on 2026-08-28. Image, PDF, audio, and video uploads worked; unsupported and oversize files were rejected; linking and deletion worked; Chrome PDF preview was fixed in IMP-031 and successfully re-tested.
 
 ## Pilot onboarding script
 
