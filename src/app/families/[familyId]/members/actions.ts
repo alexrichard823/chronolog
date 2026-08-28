@@ -22,7 +22,6 @@ async function requireUser() {
 
 async function requestOrigin() {
   if (process.env.VERCEL) return PRODUCTION_ORIGIN;
-
   const requestHeaders = await headers();
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host?.includes("localhost") ? "http" : "https");
@@ -35,7 +34,7 @@ function invitationErrorCode(message: string) {
   if (text.includes("already a member")) return "already-member";
   if (text.includes("pending invitation")) return "already-invited";
   if (text.includes("rate limit")) return "rate-limited";
-  if (text.includes("owner or an admin") || text.includes("access denied")) return "no-manage-access";
+  if (text.includes("only the family owner") || text.includes("access denied")) return "no-manage-access";
   if (text.includes("valid email")) return "invalid-email";
   return "invite-failed";
 }
@@ -51,17 +50,8 @@ export async function inviteFamilyMember(formData: FormData) {
   const { supabase } = await requireUser();
   const rawToken = randomBytes(32).toString("base64url");
   const tokenHash = createHash("sha256").update(rawToken).digest("hex");
-
-  const { data: invitationId, error: createError } = await supabase.rpc("create_family_invitation", {
-    target_family_id: familyId,
-    target_email: email,
-    target_role: role,
-    supplied_token_hash: tokenHash,
-  });
-
-  if (createError || !invitationId) {
-    redirect(membersPath(familyId, `error=${invitationErrorCode(createError?.message ?? "")}`));
-  }
+  const { data: invitationId, error: createError } = await supabase.rpc("create_family_invitation", { target_family_id: familyId, target_email: email, target_role: role, supplied_token_hash: tokenHash });
+  if (createError || !invitationId) redirect(membersPath(familyId, `error=${invitationErrorCode(createError?.message ?? "")}`));
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
@@ -71,14 +61,7 @@ export async function inviteFamilyMember(formData: FormData) {
 
   supabase.functions.setAuth(session.access_token);
   const origin = await requestOrigin();
-  const { error: emailError } = await supabase.functions.invoke("send-family-invitation", {
-    body: {
-      invitationId,
-      rawToken,
-      origin,
-    },
-  });
-
+  const { error: emailError } = await supabase.functions.invoke("send-family-invitation", { body: { invitationId, rawToken, origin } });
   if (emailError) {
     console.error("Failed to send family invitation email", emailError);
     await supabase.rpc("revoke_family_invitation", { target_invitation_id: invitationId });
@@ -107,11 +90,7 @@ export async function updateMemberRole(formData: FormData) {
   if (!familyId || !userId) redirect("/families");
   if (!MANAGED_ROLES.has(role)) redirect(membersPath(familyId, "error=invalid-role"));
   const { supabase } = await requireUser();
-  const { error } = await supabase.rpc("update_family_member_role", {
-    target_family_id: familyId,
-    target_user_id: userId,
-    target_role: role,
-  });
+  const { error } = await supabase.rpc("update_family_member_role", { target_family_id: familyId, target_user_id: userId, target_role: role });
   if (error) redirect(membersPath(familyId, "error=role-update-failed"));
   revalidatePath(membersPath(familyId));
   revalidatePath(`/families/${familyId}`);
@@ -124,10 +103,7 @@ export async function removeMember(formData: FormData) {
   if (!familyId || !userId) redirect("/families");
   const { supabase, user } = await requireUser();
   const removingSelf = user.id === userId;
-  const { error } = await supabase.rpc("remove_family_member", {
-    target_family_id: familyId,
-    target_user_id: userId,
-  });
+  const { error } = await supabase.rpc("remove_family_member", { target_family_id: familyId, target_user_id: userId });
   if (error) redirect(membersPath(familyId, "error=remove-failed"));
   revalidatePath("/families");
   revalidatePath(`/families/${familyId}`);
