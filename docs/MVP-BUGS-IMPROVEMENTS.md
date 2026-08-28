@@ -29,6 +29,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-018 | Product / Brand | Low | Open | Perform formal Chronolog name/domain collision check | Complete before meaningful marketing spend. |
 | IMP-019 | Homepage / Onboarding | Medium | Open | Improve first-time onboarding | Pilot feedback should drive clearer archive setup guidance. |
 | IMP-020 | Reliability / Operations | Medium | Planned | Define production monitoring and restore procedure | Document outage/log/backup recovery and run a restore drill when infrastructure supports it. |
+| IMP-033 | Collaboration / Permissions | High | In progress | Owner invitation rejected after Owner-only member-management change | Owner could create the invitation record but delivery authorization could reject the request because the Edge Function permission check depended on an RLS-filtered membership read. Updated the function to verify the caller JWT, then check the caller's Owner role with the service-role client. Supabase Edge Function version 4 deployed; awaiting production re-test. |
 
 ## Completed items
 
@@ -58,7 +59,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | Two-account collaboration acceptance test | Completed | Invite, contribute, remove, revoke passed under the earlier Owner/Admin management rule; Owner-only management now needs regression verification. |
 | Mobile browser smoke test | Completed | Mobile navigation, person/event/story editing, tree controls, media viewing, responsive forms/actions, destructive confirmation UI, Privacy, and Terms passed after IMP-029/030 fixes. |
 | Upload boundary/error test | Completed | Valid image/PDF/audio/video, unsupported types, size limits, linking, deletion, and PDF browser preview all passed after IMP-031 fix. |
-| Role/permission regression test | In progress | Verify all roles can view Members/invitations while only Owner can manage membership; recheck content permissions and access removal. |
+| Role/permission regression test | In progress | Verify Owner invitation works after IMP-033; all roles can view Members/invitations while only Owner can manage membership; recheck content permissions and access removal. |
 | Archive deletion recovery decision | Open | Resolve IMP-010 or explicitly accept pilot risk. |
 | Preview/production data separation | Open | Resolve IMP-011 before development continues against valuable real-family production data. |
 | One real-family unassisted pilot | Open | Required by PRD Definition of Done. |
@@ -77,3 +78,4 @@ Whenever development, QA, architecture review, or pilot feedback reveals a real 
 - **2026-08-28** — Added IMP-031 after Chrome blocked embedded PDF previews during upload QA.
 - **2026-08-28** — Marked IMP-031 and the upload boundary/error gate completed after all upload tests passed in production.
 - **2026-08-28** — Added and implemented IMP-032: shared member/invitation visibility with Owner-only membership management.
+- **2026-08-28** — Added IMP-033 after Owner invitations were rejected during Owner-only permission regression; Edge Function authorization fix deployed as version 4.
