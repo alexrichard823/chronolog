@@ -51,7 +51,6 @@ export function MediaPreview({ mediaType, signedUrl, title, compact = false }: M
       <iframe
         title={`${title} PDF preview`}
         src={signedUrl}
-        sandbox=""
         className={`w-full rounded-lg border bg-white ${compact ? "h-56" : "h-[70vh]"}`}
       />
       <a href={signedUrl} target="_blank" rel="noreferrer" className="inline-block text-sm underline">
