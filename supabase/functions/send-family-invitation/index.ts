@@ -79,13 +79,18 @@ Deno.serve(async (req) => {
   const expectedHash = await sha256Hex(rawToken);
   if (expectedHash !== invitation.token_hash) return json({ error: "Invitation token mismatch" }, 403);
 
-  const { data: membership } = await userClient
+  // Membership authorization is checked with the service-role client after the
+  // caller's JWT has been verified above. This avoids RLS visibility affecting
+  // the permission decision while still binding the check to the authenticated user.
+  const { data: membership, error: membershipError } = await adminClient
     .from("family_memberships")
     .select("role")
     .eq("family_id", invitation.family_id)
     .eq("user_id", user.id)
     .maybeSingle();
-  if (!membership || !["owner", "admin"].includes(membership.role)) return json({ error: "Member management access required" }, 403);
+  if (membershipError || !membership || membership.role !== "owner") {
+    return json({ error: "Only the family Owner can manage family members" }, 403);
+  }
 
   const encodedToken = encodeURIComponent(rawToken);
   const newUserRedirect = `${origin}/invitations/auth?token=${encodedToken}&new=1`;
