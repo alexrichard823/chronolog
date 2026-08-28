@@ -12,7 +12,6 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | ID | Type | Priority | Status | Item | Notes |
 | --- | --- | --- | --- | --- | --- |
 | IMP-001 | Security | Medium | Deferred | Enable Supabase leaked-password protection | Requires Supabase Pro; current MVP retains 12-character password minimum. Revisit on plan upgrade. |
-| IMP-002 | UX / Permissions | Medium | Open | Hide all mutation controls from Viewer accounts | RLS is authoritative; UI should also hide actions Viewers cannot perform. |
 | IMP-004 | Events & Stories / UX | Medium | Open | Show only date fields relevant to selected date type | Dynamically show Exact, Approximate, Range, or Unknown inputs. |
 | IMP-006 | Email / Deliverability | Low | Planned | Move authentication email to a dedicated sending subdomain | Future `auth.getchronolog.com`; keep marketing mail separate. |
 | IMP-007 | Tree / Architecture | High | Open | Replace full-family tree fetch with focal-neighborhood queries | Current tree fetch scales with entire archive instead of visible depth. |
@@ -29,13 +28,12 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-018 | Product / Brand | Low | Open | Perform formal Chronolog name/domain collision check | Complete before meaningful marketing spend. |
 | IMP-019 | Homepage / Onboarding | Medium | Open | Improve first-time onboarding | Pilot feedback should drive clearer archive setup guidance. |
 | IMP-020 | Reliability / Operations | Medium | Planned | Define production monitoring and restore procedure | Document outage/log/backup recovery and run a restore drill when infrastructure supports it. |
-| IMP-033 | Collaboration / Permissions | High | In progress | Owner invitation rejected after Owner-only member-management change | Production logs confirmed v4/v5 were returning HTTP 403 before Auth email delivery. Invitation rows themselves were created by the Miller Family Owner. Reworked delivery authorization so the database remains the membership authority: a service-role-only delivery-context RPC verifies the hashed invitation token, pending/expiry state, and that the recorded inviter is still Owner. Edge Function v6 no longer re-authorizes against the caller session's family role. Awaiting production re-test. |
-| IMP-034 | Collaboration / Email | High | In progress | Existing-account invitation delivery was inferred from Auth errors | Removed error-code guessing entirely. The service-role-only delivery-context RPC now determines whether the target Auth account exists and whether it has a password. Edge Function v6 chooses the existing-account OTP path or new-user invite path deterministically. Awaiting production re-test. |
 
 ## Completed items
 
 | ID | Type | Priority | Status | Item | Completion notes |
 | --- | --- | --- | --- | --- | --- |
+| IMP-002 | UX / Permissions | Medium | Completed | Hide all mutation controls from Viewer accounts | Production role regression confirmed Viewer can read family content but cannot create/edit/delete. Backend permissions remain authoritative. |
 | IMP-003 | Relationships / UX | High | Completed | Allow existing relationships to be edited or removed | Implemented in Phase 8.5 with validation retained. |
 | IMP-005 | Accessibility / Visual Design | High | Completed | Improve problematic dark-theme text contrast | Phase 10 stabilized MVP on an accessible light scheme. |
 | IMP-021 | Email / Reliability | High | Completed | Replace Supabase default email delivery with Resend SMTP | Resend SMTP configured and invitation delivery tested. |
@@ -46,10 +44,12 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-026 | Metadata / Branding | Low | Completed | Replace default Next.js metadata | Chronolog metadata now used. |
 | IMP-027 | Collaboration / Security | High | Completed | Secure invitations and access removal | Hashed/expiring/one-time invitations; email match; access revocation tested. |
 | IMP-028 | Relationship Integrity | High | Completed | Prevent self-parenting, duplicates, and ancestry cycles | Manual acceptance passed for self-link, duplicates, two-person/deep cycles, and loop-creating edits. |
-| IMP-029 | Auth / UX | High | Completed | Existing-account registration attempt should prompt login | Fixed in PR #31 and manually verified in production: valid existing credentials on Create Account now direct the user toward Login instead of presenting the attempt as a successful signup. |
-| IMP-030 | Relationships / Permissions | High | Completed | Relationship edits fail when changing spouse status/type/participants | Fixed in PR #31 by granting the intended relationship identity-column updates while preserving RLS and validation; manually verified by changing Divorced to Married successfully. |
+| IMP-029 | Auth / UX | High | Completed | Existing-account registration attempt should prompt login | Fixed in PR #31 and manually verified in production. |
+| IMP-030 | Relationships / Permissions | High | Completed | Relationship edits fail when changing spouse status/type/participants | Fixed in PR #31 by granting intended relationship identity-column updates while preserving RLS and validation; manually verified. |
 | IMP-031 | Media / Browser Compatibility | High | Completed | Chrome blocks embedded PDF preview | Fixed in PR #32 by removing the unnecessary iframe sandbox while preserving private short-lived signed URLs; manually verified in Chrome. |
 | IMP-032 | Collaboration / Permissions | High | Completed | Shared member visibility with Owner-only management | All current family members can view current members, roles, invitations, and collaboration activity. Only the Owner can invite, revoke, change roles, or remove another member; non-Owners may leave the family themselves. UI and backend RPC enforcement were updated. |
+| IMP-033 | Collaboration / Permissions | High | Completed | Owner invitation rejected after Owner-only member-management change | Reworked invitation authorization so the database is the single membership authority. Service-role-only delivery context verifies token, pending/expiry state, and that the inviter is still Owner. Edge Function v6 removed the brittle duplicate session-role authorization. Production Owner invitation test passed. |
+| IMP-034 | Collaboration / Email | High | Completed | Existing-account invitation delivery was inferred from Auth errors | Edge Function v6 now determines account existence/password state through a service-role-only database RPC and selects existing-user OTP vs new-user invite deterministically. Production existing-account invitation test passed. |
 
 ## Pilot launch gates
 
@@ -57,10 +57,10 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | --- | --- | --- |
 | Production custom domain and Auth URL configuration | Completed | `getchronolog.com` canonical and fresh invitation remained on custom domain. |
 | Transactional email delivery | Completed | Resend SMTP configured and tested. |
-| Two-account collaboration acceptance test | Completed | Invite, contribute, remove, revoke passed under the earlier Owner/Admin management rule; Owner-only management now needs regression verification. |
+| Two-account collaboration acceptance test | Completed | Invite, contribute, remove, revoke passed; Owner-only membership management regression subsequently passed. |
 | Mobile browser smoke test | Completed | Mobile navigation, person/event/story editing, tree controls, media viewing, responsive forms/actions, destructive confirmation UI, Privacy, and Terms passed after IMP-029/030 fixes. |
 | Upload boundary/error test | Completed | Valid image/PDF/audio/video, unsupported types, size limits, linking, deletion, and PDF browser preview all passed after IMP-031 fix. |
-| Role/permission regression test | In progress | Verify Owner invitation delivery after the v6 architecture change; all roles can view Members/invitations while only Owner can manage membership; recheck content permissions and access removal. |
+| Role/permission regression test | Completed | Owner manages membership/settings/content; Admin manages content/settings but only views membership; Editor can CRUD content but not members/archive settings; Viewer is read-only. Owner invitation delivery works through Edge Function v6. |
 | Archive deletion recovery decision | Open | Resolve IMP-010 or explicitly accept pilot risk. |
 | Preview/production data separation | Open | Resolve IMP-011 before development continues against valuable real-family production data. |
 | One real-family unassisted pilot | Open | Required by PRD Definition of Done. |
@@ -76,10 +76,7 @@ Whenever development, QA, architecture review, or pilot feedback reveals a real 
 - **2026-08-28** — Added IMP-029 existing-account registration UX and IMP-030 relationship-edit permission failure from Phase 10 mobile QA.
 - **2026-08-28** — Marked IMP-029 and IMP-030 completed after successful production verification.
 - **2026-08-28** — Marked the Phase 10 mobile browser smoke-test gate completed after all remaining mobile checks passed.
-- **2026-08-28** — Added IMP-031 after Chrome blocked embedded PDF previews during upload QA.
-- **2026-08-28** — Marked IMP-031 and the upload boundary/error gate completed after all upload tests passed in production.
+- **2026-08-28** — Added IMP-031 after Chrome blocked embedded PDF previews during upload QA, then marked it complete after successful production re-test.
 - **2026-08-28** — Added and implemented IMP-032: shared member/invitation visibility with Owner-only membership management.
-- **2026-08-28** — Added IMP-033 after Owner invitations were rejected during Owner-only permission regression.
-- **2026-08-28** — Corrected IMP-033 database root cause: renamed the conflicting `current_role` PL/pgSQL variable across Owner-only management checks and applied the fix to Supabase.
-- **2026-08-28** — Added IMP-034 after an existing confirmed account was misclassified as a new-user invitation failure; Edge Function v5 expanded fallback detection.
-- **2026-08-28** — Production logs showed v4/v5 were still failing with HTTP 403 before Auth email delivery. Replaced duplicated Edge authorization/error inference with a service-role-only database delivery-context RPC and deployed Edge Function v6; added structured downstream error logging.
+- **2026-08-28** — Added IMP-033/034 after Owner invitation regression; replaced duplicated Edge authorization and Auth-error inference with database-authoritative delivery context in Edge Function v6.
+- **2026-08-28** — Marked IMP-002, IMP-033, IMP-034, and the role/permission regression gate completed after production verification across Owner/Admin/Editor/Viewer.
