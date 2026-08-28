@@ -30,6 +30,18 @@ function allowedOrigin(value: string) {
   }
 }
 
+function isExistingUserError(error: { code?: string; message?: string; status?: number }) {
+  const code = error.code?.toLowerCase() ?? "";
+  const message = error.message?.toLowerCase() ?? "";
+  return (
+    code === "email_exists" ||
+    code === "user_already_exists" ||
+    code === "email_already_registered" ||
+    (error.status === 422 && (message.includes("already") || message.includes("registered"))) ||
+    (message.includes("already") && (message.includes("registered") || message.includes("exists") || message.includes("user")))
+  );
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
@@ -79,9 +91,6 @@ Deno.serve(async (req) => {
   const expectedHash = await sha256Hex(rawToken);
   if (expectedHash !== invitation.token_hash) return json({ error: "Invitation token mismatch" }, 403);
 
-  // Membership authorization is checked with the service-role client after the
-  // caller's JWT has been verified above. This avoids RLS visibility affecting
-  // the permission decision while still binding the check to the authenticated user.
   const { data: membership, error: membershipError } = await adminClient
     .from("family_memberships")
     .select("role")
@@ -101,9 +110,10 @@ Deno.serve(async (req) => {
   });
 
   if (!inviteError) return json({ delivered: true, account: "new" });
-
-  const alreadyExists = inviteError.code === "email_exists" || inviteError.code === "user_already_exists";
-  if (!alreadyExists) return json({ error: "Supabase invitation email failed" }, 502);
+  if (!isExistingUserError(inviteError)) {
+    console.error("Supabase invitation email failed", { code: inviteError.code, status: inviteError.status, message: inviteError.message });
+    return json({ error: "Supabase invitation email failed" }, 502);
+  }
 
   const publicClient = createClient(supabaseUrl, anonKey, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
@@ -116,6 +126,9 @@ Deno.serve(async (req) => {
     },
   });
 
-  if (magicLinkError) return json({ error: "Existing-user invitation email failed" }, 502);
+  if (magicLinkError) {
+    console.error("Existing-user invitation email failed", { code: magicLinkError.code, status: magicLinkError.status, message: magicLinkError.message });
+    return json({ error: "Existing-user invitation email failed" }, 502);
+  }
   return json({ delivered: true, account: "existing" });
 });
