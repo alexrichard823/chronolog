@@ -54,7 +54,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | Production custom domain and Auth URL configuration | Completed | `getchronolog.com` canonical and fresh invitation remained on custom domain. |
 | Transactional email delivery | Completed | Resend SMTP configured and tested. |
 | Two-account collaboration acceptance test | Completed | Invite, contribute, remove, revoke passed. |
-| Mobile browser smoke test | In progress | IMP-029 and IMP-030 were fixed and manually verified; finish remaining mobile navigation/tree/media/layout/legal checks. |
+| Mobile browser smoke test | Completed | Mobile navigation, person/event/story editing, tree controls, media viewing, responsive forms/actions, destructive confirmation UI, Privacy, and Terms passed after IMP-029/030 fixes. |
 | Upload boundary/error test | Open | Test supported/unsupported files, size limits, failure behavior, and successful media. |
 | Role/permission regression test | Open | Reconfirm Owner/Admin/Editor/Viewer UI plus backend enforcement. |
 | Archive deletion recovery decision | Open | Resolve IMP-010 or explicitly accept pilot risk. |
@@ -71,3 +71,4 @@ Whenever development, QA, architecture review, or pilot feedback reveals a real 
 - **2026-08-28** — Expanded into the authoritative project-wide tracker and reconciled known Phase 8.5–10 work.
 - **2026-08-28** — Added IMP-029 existing-account registration UX and IMP-030 relationship-edit permission failure from Phase 10 mobile QA.
 - **2026-08-28** — Marked IMP-029 and IMP-030 completed after successful production verification.
+- **2026-08-28** — Marked the Phase 10 mobile browser smoke-test gate completed after all remaining mobile checks passed.
