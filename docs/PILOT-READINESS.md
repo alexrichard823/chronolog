@@ -24,6 +24,7 @@ This checklist implements Phase 10 of the MVP PRD: mobile testing, permission te
 - [x] Verify a fresh invitation email link opens on `getchronolog.com` and completes acceptance after the Site URL change.
 - [x] Run the mobile browser smoke test below on at least one real mobile browser; all listed checks passed after fixing the registration and relationship-edit issues discovered during testing.
 - [x] Run upload boundary tests below; all listed checks passed after fixing the Chrome PDF preview issue.
+- [x] Run the permission smoke test below across Owner, Admin, Editor, and Viewer after the Owner-only membership-management change.
 - [ ] Run the complete two-account MVP acceptance test on the release candidate.
 - [ ] Decide whether the current immediate archive-delete implementation is acceptable for the first pilot or implement the architecture-recommended re-auth + recovery window first.
 - [ ] Establish a separate Preview/testing backend before development resumes against real pilot data.
@@ -48,15 +49,18 @@ Test at narrow mobile width and normal desktop width.
 
 ## Permission smoke test
 
-Use Owner plus a second account.
+Use Owner plus Admin, Editor, and Viewer accounts.
 
-- Owner can manage members and archive settings.
-- Admin can manage members except Owner-only actions.
-- Editor can create/edit/delete family content but cannot manage members/archive settings.
-- Viewer can read but cannot mutate content.
+- Owner can manage members, archive settings, and family content.
+- Admin can manage family content and family settings, but can only view members/invitations; membership management is Owner-only.
+- Editor can create/edit/delete family content but cannot manage members or archive settings.
+- Viewer can read family content but cannot mutate it.
+- Every current member can view the Family Members screen and see current members, roles, and invitations.
 - Removed member loses family/database access immediately.
 - Removed member cannot obtain new private-media access.
 - An already-issued signed media URL may remain usable only until its short TTL expires.
+
+**Result:** Passed on 2026-08-28 after the Owner-only membership-management amendment and invitation-delivery architecture were manually re-tested in production. Owner invitation delivery, Admin/Editor/Viewer visibility, content permissions, and Viewer read-only behavior passed.
 
 ## Upload boundary test
 
