@@ -29,7 +29,6 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-018 | Product / Brand | Low | Open | Perform formal Chronolog name/domain collision check | Complete before meaningful marketing spend. |
 | IMP-019 | Homepage / Onboarding | Medium | Open | Improve first-time onboarding | Pilot feedback should drive clearer archive setup guidance. |
 | IMP-020 | Reliability / Operations | Medium | Planned | Define production monitoring and restore procedure | Document outage/log/backup recovery and run a restore drill when infrastructure supports it. |
-| IMP-031 | Media / Browser Compatibility | High | In progress | Chrome blocks embedded PDF preview | Phase 10 upload QA found Chrome blocking the PDF viewer because the signed PDF was rendered in a sandboxed iframe. Remove the unnecessary iframe sandbox while keeping private short-lived signed URLs and verify PDF preview/open-in-new-tab behavior. |
 
 ## Completed items
 
@@ -47,6 +46,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-028 | Relationship Integrity | High | Completed | Prevent self-parenting, duplicates, and ancestry cycles | Manual acceptance passed for self-link, duplicates, two-person/deep cycles, and loop-creating edits. |
 | IMP-029 | Auth / UX | High | Completed | Existing-account registration attempt should prompt login | Fixed in PR #31 and manually verified in production: valid existing credentials on Create Account now direct the user toward Login instead of presenting the attempt as a successful signup. |
 | IMP-030 | Relationships / Permissions | High | Completed | Relationship edits fail when changing spouse status/type/participants | Fixed in PR #31 by granting the intended relationship identity-column updates while preserving RLS and validation; manually verified by changing Divorced to Married successfully. |
+| IMP-031 | Media / Browser Compatibility | High | Completed | Chrome blocks embedded PDF preview | Fixed in PR #32 by removing the unnecessary iframe sandbox while preserving private short-lived signed URLs; manually verified in Chrome. |
 
 ## Pilot launch gates
 
@@ -56,7 +56,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | Transactional email delivery | Completed | Resend SMTP configured and tested. |
 | Two-account collaboration acceptance test | Completed | Invite, contribute, remove, revoke passed. |
 | Mobile browser smoke test | Completed | Mobile navigation, person/event/story editing, tree controls, media viewing, responsive forms/actions, destructive confirmation UI, Privacy, and Terms passed after IMP-029/030 fixes. |
-| Upload boundary/error test | In progress | PDF preview bug IMP-031 found during valid-file testing; continue after fix verification. |
+| Upload boundary/error test | Completed | Valid image/PDF/audio/video, unsupported types, size limits, linking, deletion, and PDF browser preview all passed after IMP-031 fix. |
 | Role/permission regression test | Open | Reconfirm Owner/Admin/Editor/Viewer UI plus backend enforcement. |
 | Archive deletion recovery decision | Open | Resolve IMP-010 or explicitly accept pilot risk. |
 | Preview/production data separation | Open | Resolve IMP-011 before development continues against valuable real-family production data. |
@@ -74,3 +74,4 @@ Whenever development, QA, architecture review, or pilot feedback reveals a real 
 - **2026-08-28** — Marked IMP-029 and IMP-030 completed after successful production verification.
 - **2026-08-28** — Marked the Phase 10 mobile browser smoke-test gate completed after all remaining mobile checks passed.
 - **2026-08-28** — Added IMP-031 after Chrome blocked embedded PDF previews during upload QA.
+- **2026-08-28** — Marked IMP-031 and the upload boundary/error gate completed after all upload tests passed in production.
