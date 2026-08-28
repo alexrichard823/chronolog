@@ -9,15 +9,35 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [existingAccount, setExistingAccount] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setMessage("");
+    setExistingAccount(false);
 
     const supabase = createClient();
     const nextPath = safeInternalPath(new URLSearchParams(window.location.search).get("next"));
+
+    // If these exact credentials already belong to an existing account, give the
+    // user a clear sign-in path instead of presenting the attempt as a new signup.
+    // Checking the password avoids exposing account existence to someone who only
+    // knows an email address.
+    const { data: existingSession, error: existingAccountError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (!existingAccountError && existingSession.user) {
+      await supabase.auth.signOut();
+      setExistingAccount(true);
+      setMessage("An account already exists with these credentials. Log in instead.");
+      setLoading(false);
+      return;
+    }
+
     const callbackUrl = `${window.location.origin}/auth/callback${nextPath === "/families" ? "" : `?next=${encodeURIComponent(nextPath)}`}`;
     const { error } = await supabase.auth.signUp({
       email,
@@ -56,7 +76,14 @@ export default function RegisterPage() {
             {loading ? "Creating account..." : "Create account"}
           </button>
         </form>
-        {message && <p className="mt-4">{message}</p>}
+        {message && (
+          <div className="mt-4 space-y-2">
+            <p>{message}</p>
+            {existingAccount && (
+              <Link href="/login" className="inline-block font-medium underline">Go to login</Link>
+            )}
+          </div>
+        )}
       </div>
     </main>
   );
