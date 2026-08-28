@@ -16,12 +16,12 @@ This checklist implements Phase 10 of the MVP PRD: mobile testing, permission te
 - [x] Private media uses short-lived signed URLs (5-minute TTL).
 - [x] Upload UI validates supported formats and per-type size limits before upload.
 - [x] Invitation/member permission path has passed two-account manual acceptance testing.
+- [x] Supabase Auth Site URL is `https://getchronolog.com` and custom-domain redirect URLs are configured.
+- [x] Supabase leaked-password protection reviewed; deferred because HaveIBeenPwned integration requires Supabase Pro. The MVP retains its 12-character password minimum.
 
 ## Must complete before first real-family pilot
 
-- [ ] Enable Supabase leaked-password protection.
-- [ ] Add `https://getchronolog.com/**` to Supabase Auth allowed redirect URLs and set the production Site URL to `https://getchronolog.com` after confirming auth flows on the custom domain.
-- [ ] Verify a fresh invitation email link opens on `getchronolog.com` and completes acceptance.
+- [ ] Verify a fresh invitation email link opens on `getchronolog.com` and completes acceptance after the Site URL change.
 - [ ] Run the mobile browser smoke test below on at least one iPhone/Safari-class browser and one Android/Chrome-class browser or equivalent responsive emulation.
 - [ ] Run upload boundary tests below.
 - [ ] Run the complete two-account MVP acceptance test on the release candidate.
