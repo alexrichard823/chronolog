@@ -29,8 +29,6 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-018 | Product / Brand | Low | Open | Perform formal Chronolog name/domain collision check | Complete before meaningful marketing spend. |
 | IMP-019 | Homepage / Onboarding | Medium | Open | Improve first-time onboarding | Pilot feedback should drive clearer archive setup guidance. |
 | IMP-020 | Reliability / Operations | Medium | Planned | Define production monitoring and restore procedure | Document outage/log/backup recovery and run a restore drill when infrastructure supports it. |
-| IMP-029 | Auth / UX | High | In progress | Existing-account registration attempt should prompt login | Phase 10 mobile QA found that entering valid credentials for an existing account on Create Account still looked like a signup. Fix verifies the exact credentials without exposing account existence from email alone, then signs back out and presents a Login action. |
-| IMP-030 | Relationships / Permissions | High | In progress | Relationship edits fail when changing spouse status/type/participants | Edit UI sends relationship identity columns but authenticated UPDATE grants omitted them. Add the intended column grants while retaining RLS, duplicate/self-link/canonical-order, and cycle validation. |
 
 ## Completed items
 
@@ -46,6 +44,8 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-026 | Metadata / Branding | Low | Completed | Replace default Next.js metadata | Chronolog metadata now used. |
 | IMP-027 | Collaboration / Security | High | Completed | Secure invitations and access removal | Hashed/expiring/one-time invitations; email match; access revocation tested. |
 | IMP-028 | Relationship Integrity | High | Completed | Prevent self-parenting, duplicates, and ancestry cycles | Manual acceptance passed for self-link, duplicates, two-person/deep cycles, and loop-creating edits. |
+| IMP-029 | Auth / UX | High | Completed | Existing-account registration attempt should prompt login | Fixed in PR #31 and manually verified in production: valid existing credentials on Create Account now direct the user toward Login instead of presenting the attempt as a successful signup. |
+| IMP-030 | Relationships / Permissions | High | Completed | Relationship edits fail when changing spouse status/type/participants | Fixed in PR #31 by granting the intended relationship identity-column updates while preserving RLS and validation; manually verified by changing Divorced to Married successfully. |
 
 ## Pilot launch gates
 
@@ -54,7 +54,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | Production custom domain and Auth URL configuration | Completed | `getchronolog.com` canonical and fresh invitation remained on custom domain. |
 | Transactional email delivery | Completed | Resend SMTP configured and tested. |
 | Two-account collaboration acceptance test | Completed | Invite, contribute, remove, revoke passed. |
-| Mobile browser smoke test | In progress | Phase 10 QA discovered IMP-029 and IMP-030; continue after fixes verify. |
+| Mobile browser smoke test | In progress | IMP-029 and IMP-030 were fixed and manually verified; finish remaining mobile navigation/tree/media/layout/legal checks. |
 | Upload boundary/error test | Open | Test supported/unsupported files, size limits, failure behavior, and successful media. |
 | Role/permission regression test | Open | Reconfirm Owner/Admin/Editor/Viewer UI plus backend enforcement. |
 | Archive deletion recovery decision | Open | Resolve IMP-010 or explicitly accept pilot risk. |
@@ -70,3 +70,4 @@ Whenever development, QA, architecture review, or pilot feedback reveals a real 
 - **2026-08-26** — Tracker created after Phase 6 functional acceptance.
 - **2026-08-28** — Expanded into the authoritative project-wide tracker and reconciled known Phase 8.5–10 work.
 - **2026-08-28** — Added IMP-029 existing-account registration UX and IMP-030 relationship-edit permission failure from Phase 10 mobile QA.
+- **2026-08-28** — Marked IMP-029 and IMP-030 completed after successful production verification.
