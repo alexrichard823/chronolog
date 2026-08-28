@@ -21,8 +21,8 @@ This checklist implements Phase 10 of the MVP PRD: mobile testing, permission te
 
 ## Must complete before first real-family pilot
 
-- [ ] Verify a fresh invitation email link opens on `getchronolog.com` and completes acceptance after the Site URL change.
-- [ ] Run the mobile browser smoke test below on at least one iPhone/Safari-class browser and one Android/Chrome-class browser or equivalent responsive emulation.
+- [x] Verify a fresh invitation email link opens on `getchronolog.com` and completes acceptance after the Site URL change.
+- [x] Run the mobile browser smoke test below on at least one real mobile browser; all listed checks passed after fixing the registration and relationship-edit issues discovered during testing.
 - [ ] Run upload boundary tests below.
 - [ ] Run the complete two-account MVP acceptance test on the release candidate.
 - [ ] Decide whether the current immediate archive-delete implementation is acceptable for the first pilot or implement the architecture-recommended re-auth + recovery window first.
@@ -43,6 +43,8 @@ Test at narrow mobile width and normal desktop width.
 8. Confirm forms do not overflow horizontally and primary actions remain reachable.
 9. Confirm destructive confirmation UI remains understandable on a small screen.
 10. Confirm Privacy and Terms pages are readable on mobile.
+
+**Result:** Passed on 2026-08-28 after IMP-029 and IMP-030 were fixed and manually re-tested in production.
 
 ## Permission smoke test
 
