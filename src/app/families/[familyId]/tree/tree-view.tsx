@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import { FamilyTree, type FamilyCardProps } from "@memoir/tree";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
+import { FamilyTree, type FamilyCardProps, type TreeApi } from "@memoir/tree";
 import type { ChronologTreePerson } from "@/lib/family-tree";
 import { buildChronologFamilyGraph, type TreePersonRecord, type TreeRelationshipRecord } from "@/lib/family-tree";
 
@@ -15,24 +15,8 @@ type Props = {
   subjectId: string;
 };
 
-type PersonCardExtraProps = {
-  onSelect: (personId: string) => void;
-};
-
-function PersonCard({
-  person,
-  personId,
-  relation,
-  selected,
-  focused: _focused,
-  collapsed: _collapsed,
-  readOnly: _readOnly,
-  metadata: _metadata,
-  placement: _placement,
-  onAddRelationship: _onAddRelationship,
-  onSelect,
-  ...rootProps
-}: FamilyCardProps<ChronologTreePerson> & PersonCardExtraProps) {
+function PersonCard(props: FamilyCardProps<ChronologTreePerson>) {
+  const { person, relation, selected } = props;
   const initials = person.display_name
     .split(/\s+/)
     .filter(Boolean)
@@ -42,9 +26,23 @@ function PersonCard({
 
   return (
     <button
-      {...rootProps}
       type="button"
-      onClick={() => onSelect(personId)}
+      aria-label={props["aria-label"]}
+      aria-pressed={selected}
+      data-focused={props["data-focused"]}
+      data-family-card={props["data-family-card"]}
+      data-node-kind={props["data-node-kind"]}
+      data-placement-group-id={props["data-placement-group-id"]}
+      data-slot-role={props["data-slot-role"]}
+      data-tree-card={props["data-tree-card"]}
+      data-person-id={props["data-person-id"]}
+      data-relation={props["data-relation"]}
+      data-generation={props["data-generation"]}
+      data-selected={props["data-selected"]}
+      data-side={props["data-side"]}
+      onClick={props.onClick}
+      onKeyDown={props.onKeyDown}
+      tabIndex={props.tabIndex}
       className={`min-w-44 cursor-pointer rounded-xl border bg-white px-4 py-3 text-left shadow-sm transition hover:border-gray-500 ${selected ? "border-black ring-2 ring-black/10" : "border-gray-300"}`}
     >
       <div className="flex items-center gap-3">
@@ -65,10 +63,7 @@ export function TreeView({ familyId, familyName, people, relationships, subjectI
   const router = useRouter();
   const [selectedId, setSelectedId] = useState(subjectId);
   const [zoom, setZoom] = useState(1);
-
-  useEffect(() => {
-    setSelectedId(subjectId);
-  }, [subjectId]);
+  const treeApiRef = useRef<TreeApi>(null);
 
   const graph = useMemo(
     () => buildChronologFamilyGraph({ people, relationships, subjectId }),
@@ -78,6 +73,11 @@ export function TreeView({ familyId, familyName, people, relationships, subjectI
 
   function changeZoom(next: number) {
     setZoom(Math.min(1.4, Math.max(0.65, Number(next.toFixed(2)))));
+  }
+
+  function resetView() {
+    setZoom(1);
+    requestAnimationFrame(() => treeApiRef.current?.fitToSubject());
   }
 
   function centerOn(personId: string) {
@@ -91,35 +91,28 @@ export function TreeView({ familyId, familyName, people, relationships, subjectI
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-gray-500">Drag to pan. Click a person for a preview.</p>
           <div className="flex items-center gap-2" aria-label="Tree zoom controls">
-            <button type="button" onClick={() => changeZoom(zoom - 0.1)} className="rounded border px-3 py-1.5 text-sm" aria-label="Zoom out">−</button>
-            <button type="button" onClick={() => setZoom(1)} className="rounded border px-3 py-1.5 text-sm">{Math.round(zoom * 100)}%</button>
-            <button type="button" onClick={() => changeZoom(zoom + 0.1)} className="rounded border px-3 py-1.5 text-sm" aria-label="Zoom in">+</button>
+            <button type="button" onClick={() => changeZoom(zoom - 0.1)} disabled={zoom <= 0.65} className="rounded border px-3 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-40" aria-label="Zoom out">−</button>
+            <button type="button" onClick={resetView} className="min-w-16 rounded border px-3 py-1.5 text-sm" aria-label="Reset zoom and center the tree">{Math.round(zoom * 100)}%</button>
+            <button type="button" onClick={() => changeZoom(zoom + 0.1)} disabled={zoom >= 1.4} className="rounded border px-3 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-40" aria-label="Zoom in">+</button>
           </div>
         </div>
 
-        <div className="h-[72vh] min-h-[520px] overflow-hidden rounded-xl border bg-gray-50">
-          <div
-            className="h-full origin-center"
-            style={{
-              transform: `scale(${zoom})`,
-              width: `${100 / zoom}%`,
-              height: `${100 / zoom}%`,
-              transformOrigin: "center center",
-            }}
-          >
-            <FamilyTree<ChronologTreePerson, PersonCardExtraProps>
+        <div className="h-[72vh] min-h-[520px] overflow-hidden rounded-xl border bg-gray-50 [contain:layout_paint]">
+            <FamilyTree<ChronologTreePerson>
               graph={graph}
               card={PersonCard}
-              cardProps={{ onSelect: setSelectedId }}
+              className="chronolog-family-tree h-full w-full border-0"
+              style={{ "--chronolog-tree-zoom": zoom, "--tree-outline-width": "0px" } as CSSProperties}
               interactionMode="pan-page-scroll"
               initialViewport="subject"
               layoutMode="compact-family"
               limits={{ ancestorGenerations: 3, descendantGenerations: 2, lateralFamilyGenerations: 1, partners: null }}
               spacing={{ row: 112, column: 36, padding: 48 }}
               selected={selectedId}
+              onPersonClick={(_person, personId) => setSelectedId(personId)}
+              treeApiRef={treeApiRef}
               ariaLabel={`${familyName} family tree`}
             />
-          </div>
         </div>
       </section>
 

@@ -12,10 +12,8 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | ID | Type | Priority | Status | Item | Notes |
 | --- | --- | --- | --- | --- | --- |
 | IMP-001 | Security | Medium | Deferred | Enable Supabase leaked-password protection | Requires Supabase Pro; current MVP retains 12-character password minimum. Revisit on plan upgrade. |
-| IMP-004 | Events & Stories / UX | Medium | Open | Show only date fields relevant to selected date type | Dynamically show Exact, Approximate, Range, or Unknown inputs. |
 | IMP-006 | Email / Deliverability | Low | Planned | Move authentication email to a dedicated sending subdomain | Future `auth.getchronolog.com`; keep marketing mail separate. |
 | IMP-007 | Tree / Architecture | High | Open | Replace full-family tree fetch with focal-neighborhood queries | Current tree fetch scales with entire archive instead of visible depth. |
-| IMP-008 | Tree / Build | Medium | Open | Verify `@memoir/tree` is explicitly locked as a root dependency | Ensure deterministic clean installs. |
 | IMP-009 | Security / Surface Area | Medium | Open | Remove or protect public `/tree-prototype` | Prototype should not remain public for broad launch. |
 | IMP-010 | Data Safety | High | Open | Add safer archive deletion recovery | Current hard delete should eventually use re-auth plus recovery/soft-delete. |
 | IMP-011 | Environment / Data Safety | High | Open | Separate Preview/testing from production Supabase | Prevent future testing from mutating real pilot data. |
@@ -35,7 +33,9 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | --- | --- | --- | --- | --- | --- |
 | IMP-002 | UX / Permissions | Medium | Completed | Hide all mutation controls from Viewer accounts | Production role regression confirmed Viewer can read family content but cannot create/edit/delete. Backend permissions remain authoritative. |
 | IMP-003 | Relationships / UX | High | Completed | Allow existing relationships to be edited or removed | Implemented in Phase 8.5 with validation retained. |
+| IMP-004 | Events & Stories / UX | Medium | Completed | Show only date fields relevant to selected date type | Shared progressive-disclosure date control now shows only Exact, Approximate, Range, or Unknown inputs for event and story create/edit forms. |
 | IMP-005 | Accessibility / Visual Design | High | Completed | Improve problematic dark-theme text contrast | Phase 10 stabilized MVP on an accessible light scheme. |
+| IMP-008 | Tree / Build | Medium | Completed | Lock `@memoir/tree` as a root dependency | Synchronized `package-lock.json` with the existing root dependency so clean installs are deterministic. |
 | IMP-021 | Email / Reliability | High | Completed | Replace Supabase default email delivery with Resend SMTP | Resend SMTP configured and invitation delivery tested. |
 | IMP-022 | Email / Permissions | High | Completed | Fix Edge Function access to invitation records | Service role can read invitation records; normal users still cannot directly access them. |
 | IMP-023 | Domain / Auth | High | Completed | Make `getchronolog.com` canonical production/auth origin | Vercel domain, Supabase Site URL/redirects, app origin, and Edge Function updated. |
@@ -47,9 +47,10 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-029 | Auth / UX | High | Completed | Existing-account registration attempt should prompt login | Fixed in PR #31 and manually verified in production. |
 | IMP-030 | Relationships / Permissions | High | Completed | Relationship edits fail when changing spouse status/type/participants | Fixed in PR #31 by granting intended relationship identity-column updates while preserving RLS and validation; manually verified. |
 | IMP-031 | Media / Browser Compatibility | High | Completed | Chrome blocks embedded PDF preview | Fixed in PR #32 by removing the unnecessary iframe sandbox while preserving private short-lived signed URLs; manually verified in Chrome. |
-| IMP-032 | Collaboration / Permissions | High | Completed | Shared member visibility with Owner-only management | All current family members can view current members, roles, invitations, and collaboration activity. Only the Owner can invite, revoke, change roles, or remove another member; non-Owners may leave the family themselves. UI and backend RPC enforcement were updated. |
-| IMP-033 | Collaboration / Permissions | High | Completed | Owner invitation rejected after Owner-only member-management change | Reworked invitation authorization so the database is the single membership authority. Service-role-only delivery context verifies token, pending/expiry state, and that the inviter is still Owner. Edge Function v6 removed the brittle duplicate session-role authorization. Production Owner invitation test passed. |
+| IMP-032 | Collaboration / Permissions | High | Completed | Shared member and invitation visibility | All current family members can view current members, roles, invitations, and collaboration activity. Non-Owners may leave the family themselves. The temporary Owner-only management rule was superseded on 2026-09-02; Owners and Admins are approved to manage invitations and remove non-Owner members, while only the Owner may change existing member roles. |
+| IMP-033 | Collaboration / Permissions | High | Completed | Invitation authorization regression after permission hardening | Reworked invitation authorization so the database is the single membership authority. Service-role-only delivery context verifies token, pending/expiry state, and an authorized inviter. Edge Function v6 removed brittle duplicate session-role authorization. Production Owner invitation test passed under the prior rule; Admin behavior requires re-test after the 2026-09-02 policy change is implemented. |
 | IMP-034 | Collaboration / Email | High | Completed | Existing-account invitation delivery was inferred from Auth errors | Edge Function v6 now determines account existence/password state through a service-role-only database RPC and selects existing-user OTP vs new-user invite deterministically. Production existing-account invitation test passed. |
+| IMP-035 | Tree / UX | High | Completed | Contain tree zoom and make person selection reliable | Zoom now scales only the tree canvas inside a fixed clipped viewport. Person selection uses the renderer's supported click callback so the preview updates consistently. |
 
 ## Pilot launch gates
 
@@ -57,10 +58,10 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | --- | --- | --- |
 | Production custom domain and Auth URL configuration | Completed | `getchronolog.com` canonical and fresh invitation remained on custom domain. |
 | Transactional email delivery | Completed | Resend SMTP configured and tested. |
-| Two-account collaboration acceptance test | Completed | Invite, contribute, remove, revoke passed; Owner-only membership management regression subsequently passed. |
+| Two-account collaboration acceptance test | Completed | Invite, contribute, remove, and revoke passed under the prior Owner-only rule; Admin management requires re-test after the 2026-09-02 policy change is implemented. |
 | Mobile browser smoke test | Completed | Mobile navigation, person/event/story editing, tree controls, media viewing, responsive forms/actions, destructive confirmation UI, Privacy, and Terms passed after IMP-029/030 fixes. |
 | Upload boundary/error test | Completed | Valid image/PDF/audio/video, unsupported types, size limits, linking, deletion, and PDF browser preview all passed after IMP-031 fix. |
-| Role/permission regression test | Completed | Owner manages membership/settings/content; Admin manages content/settings but only views membership; Editor can CRUD content but not members/archive settings; Viewer is read-only. Owner invitation delivery works through Edge Function v6. |
+| Role/permission regression test | Needs re-test | Approved policy allows Owners and Admins to manage invitations and remove non-Owner members. Only the Owner changes existing member roles. Editor cannot manage members/archive settings; Viewer is read-only. Re-test after implementation. |
 | Archive deletion recovery decision | Open | Resolve IMP-010 or explicitly accept pilot risk. |
 | Preview/production data separation | Open | Resolve IMP-011 before development continues against valuable real-family production data. |
 | One real-family unassisted pilot | Open | Required by PRD Definition of Done. |
@@ -77,6 +78,8 @@ Whenever development, QA, architecture review, or pilot feedback reveals a real 
 - **2026-08-28** — Marked IMP-029 and IMP-030 completed after successful production verification.
 - **2026-08-28** — Marked the Phase 10 mobile browser smoke-test gate completed after all remaining mobile checks passed.
 - **2026-08-28** — Added IMP-031 after Chrome blocked embedded PDF previews during upload QA, then marked it complete after successful production re-test.
-- **2026-08-28** — Added and implemented IMP-032: shared member/invitation visibility with Owner-only membership management.
+- **2026-08-28** — Added and implemented IMP-032 under the then-current Owner-only membership-management rule.
 - **2026-08-28** — Added IMP-033/034 after Owner invitation regression; replaced duplicated Edge authorization and Auth-error inference with database-authoritative delivery context in Edge Function v6.
 - **2026-08-28** — Marked IMP-002, IMP-033, IMP-034, and the role/permission regression gate completed after production verification across Owner/Admin/Editor/Viewer.
+- **2026-09-02** — Restored the approved Owner/Admin membership-management policy in project documentation; implementation and regression testing remain required.
+- **2026-09-02** — Completed the tree viewport/selection fix, event/story date progressive disclosure, and deterministic `@memoir/tree` dependency locking.

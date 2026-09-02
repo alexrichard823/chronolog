@@ -49,3 +49,8 @@ textarea {
   outline: 2px solid #111827;
   outline-offset: 2px;
 }
+
+.chronolog-family-tree [data-tree-canvas] {
+  transform: scale(var(--chronolog-tree-zoom, 1));
+  transform-origin: top left;
+}
