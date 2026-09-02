@@ -45,7 +45,12 @@ export default async function FamilyTreePage({ params, searchParams }: Props) {
     );
   }
 
-  const people = (peopleResult.data ?? []).map(({ created_at: _createdAt, ...person }) => person) as TreePersonRecord[];
+  const people = (peopleResult.data ?? []).map((person) => ({
+    id: person.id,
+    display_name: person.display_name,
+    birth_date_display: person.birth_date_display,
+    death_date_display: person.death_date_display,
+  })) as TreePersonRecord[];
   const relationships = (relationshipsResult.data ?? []) as TreeRelationshipRecord[];
 
   if (!people.length) {
@@ -78,6 +83,7 @@ export default async function FamilyTreePage({ params, searchParams }: Props) {
 
       <div className="mt-6">
         <TreeView
+          key={subjectId}
           familyId={familyId}
           familyName={familyResult.data.name}
           people={people}

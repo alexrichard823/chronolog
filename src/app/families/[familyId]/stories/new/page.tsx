@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { DatePrecisionFields } from "@/components/date-precision-fields";
 import { createClient } from "@/lib/supabase/server";
 import { createStory } from "../actions";
 
@@ -33,7 +34,7 @@ export default async function NewStoryPage({ params, searchParams }: Props) {
       <div><label htmlFor="title" className="block text-sm font-medium">Title</label><input id="title" name="title" required maxLength={200} className="mt-2 w-full rounded border px-3 py-2" placeholder="e.g. Why Joseph and Mary left home" /></div>
       <div><label htmlFor="content" className="block text-sm font-medium">Story</label><textarea id="content" name="content" required rows={10} className="mt-2 w-full rounded border px-3 py-2" placeholder="Write the memory, context, or family story here..." /></div>
 
-      <fieldset className="rounded border p-4"><legend className="px-1 text-sm font-medium">Story date</legend><select name="datePrecision" defaultValue="unknown" className="mt-2 w-full rounded border px-3 py-2"><option value="unknown">Unknown</option><option value="exact">Exact date</option><option value="approximate">Approximate year</option><option value="range">Date range</option></select><div className="mt-4 grid gap-4 sm:grid-cols-2"><div><label className="block text-sm">Exact date</label><input type="date" name="exactDate" className="mt-2 w-full rounded border px-3 py-2" /></div><div><label className="block text-sm">Approximate year</label><input type="number" min="1" max="9999" name="approximateYear" className="mt-2 w-full rounded border px-3 py-2" /></div><div><label className="block text-sm">Range start</label><input type="date" name="rangeStart" className="mt-2 w-full rounded border px-3 py-2" /></div><div><label className="block text-sm">Range end</label><input type="date" name="rangeEnd" className="mt-2 w-full rounded border px-3 py-2" /></div></div><p className="mt-3 text-xs text-gray-500">Only the fields for the selected precision are used.</p></fieldset>
+      <DatePrecisionFields legend="Story date" />
 
       <div><label htmlFor="placeName" className="block text-sm font-medium">Place</label><input id="placeName" name="placeName" maxLength={200} className="mt-2 w-full rounded border px-3 py-2" /></div>
       <fieldset><legend className="text-sm font-medium">People in this story</legend><div className="mt-3 grid gap-2 sm:grid-cols-2">{(peopleResult.data ?? []).map((person) => <label key={person.id} className="flex items-center gap-2 rounded border p-3 text-sm"><input type="checkbox" name="personIds" value={person.id} defaultChecked={person.id === personId} />{person.display_name}</label>)}</div></fieldset>

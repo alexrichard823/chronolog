@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12 text-gray-950">
@@ -13,9 +15,9 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
           <button type="button" onClick={() => reset()} className="rounded bg-black px-5 py-3 font-medium text-white">
             Try again
           </button>
-          <a href="/families" className="rounded border border-gray-300 px-5 py-3 font-medium">
+          <Link href="/families" className="rounded border border-gray-300 px-5 py-3 font-medium">
             Back to families
-          </a>
+          </Link>
         </div>
       </section>
     </main>

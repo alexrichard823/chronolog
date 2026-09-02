@@ -194,9 +194,8 @@ Each family archive has exactly one Owner and may have multiple Admins.
 - View, add, edit, and delete family content
 - Manage people and relationships
 - Invite and remove members
-- Change member roles, except the Owner role
 - Manage family settings
-- Cannot transfer ownership, delete the archive, or remove/demote the Owner
+- Cannot change existing member roles, transfer ownership, delete the archive, or remove/demote the Owner
 
 ### Editor
 
@@ -360,7 +359,7 @@ Create an Immigration event, enter an approximate date such as "Around 1930," se
 
 ### Invite a relative
 
-An Owner or Admin enters an email and role. The relative accepts, registers or logs in, joins the family, and receives access according to their role.
+An Owner or Admin enters an email and selects the invitee's initial role. The relative accepts, registers or logs in, joins the family, and receives access according to that role. Only the Owner may later change an existing member's role.
 
 ## 15. User Value and Onboarding
 
