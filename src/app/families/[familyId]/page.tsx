@@ -6,12 +6,12 @@ import { createClient } from "@/lib/supabase/server";
 
 type FamilyDashboardPageProps = {
   params: Promise<{ familyId: string }>;
-  searchParams: Promise<{ storyCreated?: string; eventDeleted?: string; storyDeleted?: string; familyUpdated?: string; joined?: string; error?: string }>;
+  searchParams: Promise<{ storyCreated?: string; eventDeleted?: string; storyDeleted?: string; familyUpdated?: string; joined?: string; restored?: string; error?: string }>;
 };
 
 export default async function FamilyDashboardPage({ params, searchParams }: FamilyDashboardPageProps) {
   const { familyId } = await params;
-  const { storyCreated, eventDeleted, storyDeleted, familyUpdated, joined, error: errorCode } = await searchParams;
+  const { storyCreated, eventDeleted, storyDeleted, familyUpdated, joined, restored, error: errorCode } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -38,6 +38,7 @@ export default async function FamilyDashboardPage({ params, searchParams }: Fami
       <Link href="/families" className="text-sm underline">Back to your families</Link>
 
       {joined === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Invitation accepted. You now have {role ? `${role} ` : ""}access to this family.</p>}
+      {restored === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Family archive restored. Previous members can access it again.</p>}
       {storyCreated === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Story saved successfully.</p>}
       {eventDeleted === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Event deleted. Linked people, stories, and media were kept.</p>}
       {storyDeleted === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Story deleted. Linked people, events, and media were kept.</p>}

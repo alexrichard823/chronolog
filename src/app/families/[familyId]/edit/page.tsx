@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ConfirmDeleteButton } from "@/components/confirm-delete-button";
 import { createClient } from "@/lib/supabase/server";
-import { deleteFamily, updateFamily } from "../../actions";
+import { scheduleFamilyDeletion, updateFamily } from "../../actions";
 
 type Props = {
   params: Promise<{ familyId: string }>;
@@ -37,6 +36,8 @@ export default async function EditFamilyPage({ params, searchParams }: Props) {
       ? "We could not update this family archive."
       : errorCode === "delete-failed"
         ? "We could not delete this family archive. Nothing was intentionally removed."
+        : errorCode === "deletion-confirmation"
+          ? `Deletion was not scheduled. Type the exact family name, “${familyResult.data.name},” and confirm that you understand the recovery process.`
         : null;
 
   const summary = `${peopleCount.count ?? 0} people, ${relationshipCount.count ?? 0} relationships, ${eventCount.count ?? 0} events, ${storyCount.count ?? 0} stories, and ${mediaCount.count ?? 0} media items`;
@@ -58,9 +59,20 @@ export default async function EditFamilyPage({ params, searchParams }: Props) {
       {role === "owner" && (
         <section className="mt-12 rounded-xl border border-red-200 p-5">
           <h2 className="font-semibold text-red-800">Delete family archive</h2>
-          <p className="mt-2 text-sm text-gray-700">Owner-only. This permanently deletes the archive and all of its records: {summary}. Private media files are also removed from Storage.</p>
-          <p className="mt-2 text-sm font-medium text-red-800">This cannot be undone.</p>
-          <div className="mt-4"><ConfirmDeleteButton action={deleteFamily} fields={{ familyId }} confirmMessage={`Permanently delete “${family.name}” and all of its ${summary}? This cannot be undone.`} label="Delete family archive" /></div>
+          <p className="mt-2 text-sm text-gray-700">Owner-only. This removes access to the archive and all of its records: {summary}. You can restore it from Recently Deleted for 30 days.</p>
+          <p className="mt-2 text-sm font-medium text-red-800">Pending invitations will be revoked. Permanent deletion remains a separate action.</p>
+          <form action={scheduleFamilyDeletion} className="mt-5 space-y-4">
+            <input type="hidden" name="familyId" value={familyId} />
+            <div>
+              <label htmlFor="confirmationName" className="block text-sm font-medium">Type <span className="font-semibold">{family.name}</span> to confirm</label>
+              <input id="confirmationName" name="confirmationName" required autoComplete="off" className="mt-2 w-full rounded border px-3 py-2" />
+            </div>
+            <label className="flex items-start gap-2 text-sm text-gray-700">
+              <input type="checkbox" name="acknowledgeRecovery" required className="mt-1" />
+              <span>I understand this archive will immediately disappear for every member and can be restored for 30 days.</span>
+            </label>
+            <button type="submit" className="rounded border border-red-300 px-4 py-2 text-sm text-red-700 hover:bg-red-50">Move to Recently Deleted</button>
+          </form>
         </section>
       )}
     </main>

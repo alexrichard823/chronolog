@@ -54,16 +54,54 @@ export async function updateFamily(formData: FormData) {
   redirect(`/families/${familyId}?familyUpdated=1`);
 }
 
-export async function deleteFamily(formData: FormData) {
+export async function scheduleFamilyDeletion(formData: FormData) {
   const familyId = String(formData.get("familyId") ?? "").trim();
-  if (!familyId) redirect("/families?error=delete-failed");
+  const confirmationName = String(formData.get("confirmationName") ?? "").trim();
+  const acknowledged = formData.get("acknowledgeRecovery") === "on";
+  if (!familyId || !confirmationName || !acknowledged) {
+    redirect(`/families/${familyId}/edit?error=deletion-confirmation`);
+  }
 
   const { supabase, user } = await getAuthenticatedClient();
   const { data: membership } = await supabase.from("family_memberships").select("role").eq("family_id", familyId).eq("user_id", user.id).maybeSingle();
   if (!membership || membership.role !== "owner") redirect(`/families/${familyId}?error=owner-only-delete`);
 
-  const { data, error } = await supabase.rpc("delete_family_archive", { target_family_id: familyId });
-  if (error) redirect(`/families/${familyId}/edit?error=delete-failed`);
+  const { error } = await supabase.rpc("schedule_family_archive_deletion", {
+    target_family_id: familyId,
+    expected_family_name: confirmationName,
+  });
+  if (error) redirect(`/families/${familyId}/edit?error=deletion-confirmation`);
+
+  revalidatePath("/families");
+  redirect("/families/deleted?scheduled=1");
+}
+
+export async function restoreFamily(formData: FormData) {
+  const familyId = String(formData.get("familyId") ?? "").trim();
+  if (!familyId) redirect("/families/deleted?error=restore-failed");
+
+  const { supabase } = await getAuthenticatedClient();
+  const { error } = await supabase.rpc("restore_family_archive", { target_family_id: familyId });
+  if (error) redirect("/families/deleted?error=restore-failed");
+
+  revalidatePath("/families");
+  redirect(`/families/${familyId}?restored=1`);
+}
+
+export async function permanentlyDeleteFamily(formData: FormData) {
+  const familyId = String(formData.get("familyId") ?? "").trim();
+  const confirmationName = String(formData.get("confirmationName") ?? "").trim();
+  const permanentlyAcknowledged = formData.get("acknowledgePermanent") === "on";
+  if (!familyId || !confirmationName || !permanentlyAcknowledged) {
+    redirect("/families/deleted?error=permanent-confirmation");
+  }
+
+  const { supabase } = await getAuthenticatedClient();
+  const { data, error } = await supabase.rpc("permanently_delete_family_archive", {
+    target_family_id: familyId,
+    expected_family_name: confirmationName,
+  });
+  if (error) redirect("/families/deleted?error=permanent-confirmation");
 
   const storagePaths = Array.isArray(data) ? data.filter((value): value is string => typeof value === "string" && value.length > 0) : [];
   let cleanupFailed = false;
@@ -81,5 +119,5 @@ export async function deleteFamily(formData: FormData) {
   }
 
   revalidatePath("/families");
-  redirect(`/families?familyDeleted=1${cleanupFailed ? "&warning=media-cleanup" : ""}`);
+  redirect(`/families/deleted?permanentlyDeleted=1${cleanupFailed ? "&warning=media-cleanup" : ""}`);
 }
