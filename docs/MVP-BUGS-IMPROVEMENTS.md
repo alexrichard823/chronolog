@@ -17,7 +17,6 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-007 | Tree / Architecture | High | Open | Replace full-family tree fetch with focal-neighborhood queries | Current tree fetch scales with entire archive instead of visible depth. |
 | IMP-008 | Tree / Build | Medium | Open | Verify `@memoir/tree` is explicitly locked as a root dependency | Ensure deterministic clean installs. |
 | IMP-009 | Security / Surface Area | Medium | Open | Remove or protect public `/tree-prototype` | Prototype should not remain public for broad launch. |
-| IMP-010 | Data Safety | High | Open | Add safer archive deletion recovery | Current hard delete should eventually use re-auth plus recovery/soft-delete. |
 | IMP-011 | Environment / Data Safety | High | Open | Separate Preview/testing from production Supabase | Prevent future testing from mutating real pilot data. |
 | IMP-012 | Auth / Redirects | Low | Open | Tighten Supabase Auth redirect allowlist | Replace broad `/**` rules with exact required auth/invitation paths after transition. |
 | IMP-013 | Media / Product | Medium | Deferred | Increase practical video upload capacity | Current 25 MB video/audio limit is conservative; revisit quotas/resumable uploads/transcoding. |
@@ -36,6 +35,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | IMP-002 | UX / Permissions | Medium | Completed | Hide all mutation controls from Viewer accounts | Production role regression confirmed Viewer can read family content but cannot create/edit/delete. Backend permissions remain authoritative. |
 | IMP-003 | Relationships / UX | High | Completed | Allow existing relationships to be edited or removed | Implemented in Phase 8.5 with validation retained. |
 | IMP-005 | Accessibility / Visual Design | High | Completed | Improve problematic dark-theme text contrast | Phase 10 stabilized MVP on an accessible light scheme. |
+| IMP-010 | Data Safety | High | Completed | Add safer archive deletion recovery | Replaced immediate hard deletion with exact-name confirmation, a 30-day Owner-only recovery window, immediate membership/access removal, full membership restoration, and a separately confirmed permanent-delete path. |
 | IMP-021 | Email / Reliability | High | Completed | Replace Supabase default email delivery with Resend SMTP | Resend SMTP configured and invitation delivery tested. |
 | IMP-022 | Email / Permissions | High | Completed | Fix Edge Function access to invitation records | Service role can read invitation records; normal users still cannot directly access them. |
 | IMP-023 | Domain / Auth | High | Completed | Make `getchronolog.com` canonical production/auth origin | Vercel domain, Supabase Site URL/redirects, app origin, and Edge Function updated. |
@@ -61,7 +61,7 @@ Priorities: **Critical**, **High**, **Medium**, **Low**.
 | Mobile browser smoke test | Completed | Mobile navigation, person/event/story editing, tree controls, media viewing, responsive forms/actions, destructive confirmation UI, Privacy, and Terms passed after IMP-029/030 fixes. |
 | Upload boundary/error test | Completed | Valid image/PDF/audio/video, unsupported types, size limits, linking, deletion, and PDF browser preview all passed after IMP-031 fix. |
 | Role/permission regression test | Completed | Owner manages membership/settings/content; Admin manages content/settings but only views membership; Editor can CRUD content but not members/archive settings; Viewer is read-only. Owner invitation delivery works through Edge Function v6. |
-| Archive deletion recovery decision | Open | Resolve IMP-010 or explicitly accept pilot risk. |
+| Archive deletion recovery decision | Completed | IMP-010 adds a 30-day recovery window with Owner-only restore and permanent deletion. |
 | Preview/production data separation | Open | Resolve IMP-011 before development continues against valuable real-family production data. |
 | One real-family unassisted pilot | Open | Required by PRD Definition of Done. |
 
@@ -80,3 +80,4 @@ Whenever development, QA, architecture review, or pilot feedback reveals a real 
 - **2026-08-28** — Added and implemented IMP-032: shared member/invitation visibility with Owner-only membership management.
 - **2026-08-28** — Added IMP-033/034 after Owner invitation regression; replaced duplicated Edge authorization and Auth-error inference with database-authoritative delivery context in Edge Function v6.
 - **2026-08-28** — Marked IMP-002, IMP-033, IMP-034, and the role/permission regression gate completed after production verification across Owner/Admin/Editor/Viewer.
+- **2026-09-03** — Completed IMP-010/BF-02 with recoverable archive deletion, immediate access removal, Owner-only restoration, and separately confirmed permanent deletion.

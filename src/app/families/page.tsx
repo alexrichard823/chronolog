@@ -22,10 +22,13 @@ export default async function FamiliesPage({ searchParams }: Props) {
     <main className="mx-auto w-full max-w-3xl p-8">
       <div className="flex items-start justify-between gap-4">
         <div><h1 className="text-3xl font-semibold">Your Families</h1><p className="mt-2 text-gray-600">Private family archives you belong to.</p></div>
-        <Link href="/families/new" className="rounded bg-black px-4 py-2 text-white">Create family</Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/families/deleted" className="rounded border px-4 py-2">Recently Deleted</Link>
+          <Link href="/families/new" className="rounded bg-black px-4 py-2 text-white">Create family</Link>
+        </div>
       </div>
 
-      {familyDeleted === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Family archive deleted successfully.</p>}
+      {familyDeleted === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Family archive permanently deleted.</p>}
       {leftFamily === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">You left the family and no longer have access to it.</p>}
       {warning === "media-cleanup" && <p className="mt-4 rounded border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">The archive records were deleted, but one or more private media files could not be cleaned up automatically. They are no longer visible in Chronolog.</p>}
       {errorCode === "delete-failed" && <p className="mt-6 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700">We could not delete that family archive.</p>}
