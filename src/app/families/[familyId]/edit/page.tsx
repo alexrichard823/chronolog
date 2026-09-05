@@ -38,6 +38,8 @@ export default async function EditFamilyPage({ params, searchParams }: Props) {
         ? "We could not delete this family archive. Nothing was intentionally removed."
         : errorCode === "deletion-confirmation"
           ? `Deletion was not scheduled. Type the exact family name, “${familyResult.data.name},” and confirm that you understand the recovery process.`
+          : errorCode === "deletion-schedule-failed"
+            ? "We could not schedule this archive for deletion. Nothing was removed. Please try again or contact support if the problem continues."
         : null;
 
   const summary = `${peopleCount.count ?? 0} people, ${relationshipCount.count ?? 0} relationships, ${eventCount.count ?? 0} events, ${storyCount.count ?? 0} stories, and ${mediaCount.count ?? 0} media items`;
