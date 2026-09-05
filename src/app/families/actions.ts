@@ -70,7 +70,10 @@ export async function scheduleFamilyDeletion(formData: FormData) {
     target_family_id: familyId,
     expected_family_name: confirmationName,
   });
-  if (error) redirect(`/families/${familyId}/edit?error=deletion-confirmation`);
+  if (error) {
+    console.error("Failed to schedule family archive deletion", error);
+    redirect(`/families/${familyId}/edit?error=deletion-schedule-failed`);
+  }
 
   revalidatePath("/families");
   redirect("/families/deleted?scheduled=1");
