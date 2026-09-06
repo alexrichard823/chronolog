@@ -15,6 +15,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Read `docs/PRD.md` before planning or implementing work. Build the private, collaborative, responsive family-history MVP described there; do not add excluded or post-MVP features unless the task explicitly requires them.
 - Keep the product story-first, private by default, accessible across generations, and tolerant of approximate, incomplete, unknown, or disputed information.
 
+## UI/UX revamp
+
+- For Chronolog UI/UX Revamp work, read `docs/UI-UX-DESIGN-SYSTEM.md` after the PRD and preserve its approved visual direction, responsive behavior, and interaction principles.
+- Reuse the semantic tokens in `src/app/globals.css` and the shared primitives in `src/components/ui.tsx`. Do not introduce a parallel design system or page-specific colors, radii, shadows, button styles, or form styles when an existing token/component fits.
+- Preserve the approved family navigation model of Home, People, Timeline, and Tree plus contextual Add behavior unless a task explicitly changes that information architecture. Secondary destinations should not overcrowd the primary navigation.
+- Apply the design system incrementally by revamp task. Do not redesign unrelated screens while implementing a focused UX backlog item.
+
 ## Privacy and authorization
 
 - Treat every family record and uploaded file as private. A user may access family data only through a current family membership and within the capabilities of that membership's role.
