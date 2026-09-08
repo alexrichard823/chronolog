@@ -205,6 +205,21 @@ a {
   border-color: var(--muted);
 }
 
+.ui-button-feedback.ui-button-primary:active,
+.ui-button-feedback.ui-button-primary:has([data-pending="true"]) {
+  background: var(--primary-hover);
+  box-shadow: inset 0 0 0 2px var(--primary-foreground);
+  transform: translateY(1px);
+}
+
+.ui-button-feedback.ui-button-secondary:active,
+.ui-button-feedback.ui-button-secondary:has([data-pending="true"]) {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary-hover);
+  transform: translateY(1px);
+}
+
 .ui-button-ghost {
   background: transparent;
   color: var(--muted-strong);
