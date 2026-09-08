@@ -5,6 +5,7 @@ import type {
   HTMLAttributes,
   InputHTMLAttributes,
   ReactNode,
+  Ref,
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
@@ -111,7 +112,7 @@ export function Badge({
   );
 }
 
-export type InputProps = InputHTMLAttributes<HTMLInputElement>;
+export type InputProps = InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement> };
 
 export function Input({ className, ...props }: InputProps) {
   return <input className={cx("ui-control", className)} {...props} />;
