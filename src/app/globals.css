@@ -458,6 +458,26 @@ textarea.ui-control {
   font-weight: 700;
 }
 
+.family-choice {
+  display: block;
+  border-radius: var(--chronolog-radius-lg);
+  text-decoration: none;
+}
+
+.family-choice .ui-card {
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.family-choice:hover .ui-card {
+  border-color: var(--primary);
+}
+
+.family-choice:active .ui-card,
+.family-choice .ui-card[data-pending="true"] {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
 .family-context {
   margin-top: 2rem;
   padding: 0 0.75rem;
