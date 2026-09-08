@@ -66,7 +66,7 @@ export default async function EditRelationshipPage({ params, searchParams }: Pro
         <div className="flex flex-wrap gap-3"><button type="submit" className="rounded bg-black px-4 py-2 text-white">Save relationship</button><Link href={`/families/${familyId}/people/${returnPersonId}`} className="rounded border px-4 py-2">Cancel</Link></div>
       </form>
 
-      <section className="mt-10 rounded-xl border border-red-200 p-5">
+      <section className="mt-10 rounded-xl border bg-surface border-red-200 p-5">
         <h2 className="font-semibold text-red-800">Delete relationship</h2>
         <p className="mt-2 text-sm text-gray-600">This removes only the relationship. Neither person will be deleted.</p>
         <div className="mt-4"><ConfirmDeleteButton action={deleteRelationship} fields={{ familyId, relationshipId, returnPersonId }} confirmMessage={`Delete this relationship between ${personById.get(relationship.person_a_id) ?? "Person 1"} and ${personById.get(relationship.person_b_id) ?? "Person 2"}? The people themselves will remain.`} label="Delete relationship" /></div>

@@ -14,7 +14,7 @@ export default async function InvitationSetupPage({ searchParams }: Props) {
   if (!token) {
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
-        <section className="w-full max-w-lg rounded-xl border p-8">
+        <section className="w-full max-w-lg rounded-xl border bg-surface p-8">
           <h1 className="text-3xl font-semibold">Invitation unavailable</h1>
           <p className="mt-3 text-gray-600">This invitation link is incomplete or no longer valid.</p>
           <Link href="/login" className="mt-6 inline-block rounded border px-4 py-2">Go to login</Link>
@@ -32,7 +32,7 @@ export default async function InvitationSetupPage({ searchParams }: Props) {
   if (error || !preview || !preview.email_matches) {
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
-        <section className="w-full max-w-lg rounded-xl border p-8">
+        <section className="w-full max-w-lg rounded-xl border bg-surface p-8">
           <h1 className="text-3xl font-semibold">Invitation unavailable</h1>
           <p className="mt-3 text-gray-600">This invitation is invalid, expired, revoked, already used, or belongs to another email address.</p>
           <Link href="/families" className="mt-6 inline-block rounded border px-4 py-2">Go to your families</Link>
@@ -43,7 +43,7 @@ export default async function InvitationSetupPage({ searchParams }: Props) {
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
-      <section className="w-full max-w-lg rounded-xl border p-8">
+      <section className="w-full max-w-lg rounded-xl border bg-surface p-8">
         <p className="text-sm font-medium uppercase tracking-wide text-gray-500">Chronolog invitation</p>
         <h1 className="mt-2 text-3xl font-semibold">Finish creating your account</h1>
         <p className="mt-3 text-gray-600">Your email is confirmed. Create a password so you can sign in to Chronolog normally after joining <strong>{preview.family_name}</strong>.</p>

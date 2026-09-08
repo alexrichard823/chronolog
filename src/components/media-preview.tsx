@@ -30,7 +30,7 @@ export function MediaPreview({ mediaType, signedUrl, title, compact = false }: M
 
   if (mediaType === "audio") {
     return (
-      <div className="rounded-lg border bg-gray-50 p-4">
+      <div className="rounded-lg border bg-surface p-4">
         <audio controls preload="metadata" className="w-full" src={signedUrl}>
           Your browser does not support audio playback.
         </audio>

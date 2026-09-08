@@ -85,7 +85,7 @@ export default async function FamilyMembersPage({ params, searchParams }: Props)
       {loadError && <p className="mt-6 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700">We could not load all collaboration details. Refresh and try again.</p>}
 
       {isOwner && (
-        <section className="mt-8 rounded-xl border p-6">
+        <section className="mt-8 rounded-xl border bg-surface p-6">
           <h2 className="text-xl font-semibold">Invite a relative</h2>
           <p className="mt-2 text-sm text-gray-600">The invited address receives a secure sign-in link that returns to Chronolog to accept the family invitation.</p>
           <form action={inviteFamilyMember} className="mt-5 grid gap-4 sm:grid-cols-[1fr_160px_auto] sm:items-end">
@@ -98,13 +98,13 @@ export default async function FamilyMembersPage({ params, searchParams }: Props)
         </section>
       )}
 
-      <section className="mt-8 rounded-xl border p-6">
+      <section className="mt-8 rounded-xl border bg-surface p-6">
         <h2 className="text-xl font-semibold">Current members</h2>
         <div className="mt-5 space-y-4">
           {members.map((member) => {
             const isCurrentUser = member.user_id === user.id;
             return (
-              <div key={member.user_id} className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div key={member.user_id} className="flex flex-col gap-3 rounded-lg border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div><p className="font-medium">{member.email}{isCurrentUser ? " (you)" : ""}</p><p className="mt-1 text-sm text-gray-500">{roleLabel(member.role)} · Joined {new Date(member.joined_at).toLocaleDateString()}</p></div>
                 {member.role === "owner" ? (
                   <span className="text-sm font-medium text-gray-500">Owner</span>
@@ -128,17 +128,17 @@ export default async function FamilyMembersPage({ params, searchParams }: Props)
         </div>
       </section>
 
-      <section className="mt-8 rounded-xl border p-6">
+      <section className="mt-8 rounded-xl border bg-surface p-6">
         <h2 className="text-xl font-semibold">Invitations</h2>
         {invitations.length ? <div className="mt-5 space-y-3">{invitations.map((invitation) => (
-          <div key={invitation.invitation_id} className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div key={invitation.invitation_id} className="flex flex-col gap-3 rounded-lg border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
             <div><p className="font-medium">{invitation.invited_email}</p><p className="mt-1 text-sm text-gray-500">{roleLabel(invitation.role)} · {roleLabel(invitation.status)} · Expires {new Date(invitation.expires_at).toLocaleDateString()}</p></div>
             {isOwner && invitation.status === "pending" ? <ConfirmDeleteButton action={revokeInvitation} fields={{ familyId, invitationId: invitation.invitation_id }} confirmMessage={`Revoke the invitation for ${invitation.invited_email}?`} label="Revoke" /> : null}
           </div>
         ))}</div> : <p className="mt-4 text-gray-500">No invitations yet.</p>}
       </section>
 
-      <section className="mt-8 rounded-xl border p-6">
+      <section className="mt-8 rounded-xl border bg-surface p-6">
         <h2 className="text-xl font-semibold">Recent collaboration activity</h2>
         {activity.length ? <ul className="mt-5 space-y-3">{activity.map((item, index) => <li key={`${item.created_at}-${index}`} className="text-sm"><p>{activityText(item)}</p><p className="mt-1 text-xs text-gray-500">{new Date(item.created_at).toLocaleString()}</p></li>)}</ul> : <p className="mt-4 text-gray-500">No collaboration activity yet.</p>}
       </section>

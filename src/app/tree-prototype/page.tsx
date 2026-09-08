@@ -3,7 +3,7 @@ import { MorettiTreePrototype } from "./moretti-tree";
 export default function TreePrototypePage() {
   return (
     <main className="mx-auto w-full max-w-7xl p-8">
-      <section className="rounded-xl border p-6">
+      <section className="rounded-xl border bg-surface p-6">
         <p className="text-sm font-medium uppercase tracking-wide text-gray-500">TR-01 technical spike</p>
         <h1 className="mt-1 text-3xl font-semibold">Moretti family tree prototype</h1>
         <p className="mt-3 max-w-3xl text-gray-600">

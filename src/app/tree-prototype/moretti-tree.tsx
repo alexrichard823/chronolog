@@ -57,7 +57,7 @@ function MorettiCard({ person, relation, ...rootProps }: FamilyCardProps<Prototy
 
 export function MorettiTreePrototype() {
   return (
-    <div className="h-[720px] overflow-hidden rounded-xl border bg-gray-50">
+    <div className="h-[720px] overflow-hidden rounded-xl border bg-surface">
       <FamilyTree
         graph={graph}
         card={MorettiCard}

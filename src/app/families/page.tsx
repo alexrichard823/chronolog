@@ -38,7 +38,7 @@ export default async function FamiliesPage({ searchParams }: Props) {
       ) : families && families.length > 0 ? (
         <div className="mt-8 grid gap-4">
           {families.map((family) => (
-            <Link key={family.id} href={`/families/${family.id}`} className="block rounded-lg border p-5 transition hover:bg-gray-50">
+            <Link key={family.id} href={`/families/${family.id}`} className="block rounded-lg border bg-surface p-5 transition hover:bg-gray-50">
               <h2 className="text-xl font-semibold">{family.name}</h2>
               {family.description && <p className="mt-2 text-gray-600">{family.description}</p>}
               <p className="mt-4 text-sm font-medium">Open family</p>
@@ -46,7 +46,7 @@ export default async function FamiliesPage({ searchParams }: Props) {
           ))}
         </div>
       ) : (
-        <div className="mt-8 rounded-lg border border-dashed p-8 text-center">
+        <div className="mt-8 rounded-lg border bg-surface border-dashed p-8 text-center">
           <h2 className="text-xl font-semibold">Create your first family archive</h2>
           <p className="mt-2 text-gray-600">Start by naming your family. You can add people, stories, events, and media next.</p>
           <Link href="/families/new" className="mt-5 inline-block rounded bg-black px-4 py-2 text-white">Create family</Link>

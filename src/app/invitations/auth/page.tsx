@@ -69,7 +69,7 @@ export default function InvitationAuthBridgePage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
-      <section className="w-full max-w-lg rounded-xl border p-8 text-center">
+      <section className="w-full max-w-lg rounded-xl border bg-surface p-8 text-center">
         <p className="text-sm font-medium uppercase tracking-wide text-gray-500">Chronolog invitation</p>
         <h1 className="mt-2 text-2xl font-semibold">Secure sign-in</h1>
         <p className="mt-4 text-gray-600">{message}</p>

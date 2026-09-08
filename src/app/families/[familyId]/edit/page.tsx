@@ -59,7 +59,7 @@ export default async function EditFamilyPage({ params, searchParams }: Props) {
       </form>
 
       {role === "owner" && (
-        <section className="mt-12 rounded-xl border border-red-200 p-5">
+        <section className="mt-12 rounded-xl border bg-surface border-red-200 p-5">
           <h2 className="font-semibold text-red-800">Delete family archive</h2>
           <p className="mt-2 text-sm text-gray-700">Owner-only. This removes access to the archive and all of its records: {summary}. You can restore it from Recently Deleted for 30 days.</p>
           <p className="mt-2 text-sm font-medium text-red-800">Pending invitations will be revoked. Permanent deletion remains a separate action.</p>

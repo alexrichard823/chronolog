@@ -47,7 +47,7 @@ export default function RelationshipForm({
         </select>
       </div>
 
-      <fieldset className="rounded-lg border p-4">
+      <fieldset className="rounded-lg border bg-surface p-4">
         <legend className="px-1 text-sm font-medium">Choose the relative</legend>
         <div className="mt-2 flex flex-wrap gap-4 text-sm">
           <label className="flex items-center gap-2">
