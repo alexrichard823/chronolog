@@ -36,4 +36,28 @@ Use a family where you can edit; repeat the visibility check with a Viewer accou
 7. **Roles:** Owner/Admin can Edit Archive. Editor can add content and edit profiles but cannot Edit Archive. Viewer sees the member count and People summary, but no Add, Edit, Add Relationship, or Delete controls.
 8. **Phone:** check Home and a profile at narrow width, including a long name. The dropdown should open beneath Add, stay on screen, and remain usable; the persistent mobile navigation must not cover content.
 
-Final acceptance of this follow-up is pending these Preview checks.
+Desktop acceptance passed. The user reported that mobile Add options did not open and requested more compact People formatting and consistent panel backgrounds.
+
+## Mobile Add and panel-color follow-up
+
+- Replace blur-based Add dismissal with confirmed outside-focus dismissal. A touch blur with no receiving element no longer hides a link before its click; Next.js `onNavigate` closes the menu when navigation begins.
+- Keep Escape/focus restoration and outside-pointer dismissal.
+- Put Home's four summaries in one responsive two-column grid. People uses compact name-only rows with the same 44px minimum touch area, keeping the newest five and View all.
+- Apply the existing white `surface` background to 84 panels and boxed groups throughout the app, including timeline filters, profiles, content pages, directories, membership/settings panels, and form groups.
+- No dependency, data-access, permission, or backend changes.
+
+Verification:
+
+- `npm run build` and TypeScript: passed.
+- Focused ESLint for Home and Add: passed. Full `npm run lint` retains the same six existing errors and seven warnings described above; the tree-view change only updates its background class.
+- A temporary React DOM/jsdom regression check reproduced the old premature close between pointerdown and link click. The updated component passed all seven Home/profile destinations with that event sequence, including person context, one navigation per click, Escape/focus restoration, internal/external focus, and outside-pointer dismissal. Next.js Link was stubbed; this is a DOM regression check, not an actual iOS/Android browser run.
+- Source comparison confirmed all 28 other changed source files contain only background-class changes. `git diff --check` passed.
+
+Retest on the refreshed Preview:
+
+1. On a phone, tap every Home Add option (Person, Story, Event, Media) and every profile Add option (Story, Event, Media). Each should open its form with one tap; profile forms should retain the selected person.
+2. Confirm Add still works on desktop, closes after selection, and supports Escape and outside-click dismissal.
+3. Check the smaller People summary: five newest names, working profile links/View all, two columns on larger screens and one on phones.
+4. Confirm white panels against the beige page on Home, People/profile, Timeline filters/items, Tree, Media/details, Stories/events, Members, settings, and add/edit form groups.
+
+Mobile-device and visual acceptance remain pending this retest.

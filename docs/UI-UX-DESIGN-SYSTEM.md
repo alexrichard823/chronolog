@@ -113,6 +113,8 @@ The implementation lives in `src/app/globals.css` and exposes semantic Tailwind 
 
 Do not add arbitrary hex colors in page files when a semantic token already fits the purpose.
 
+The approved UX-03 follow-up uses the white `surface` color for all major boxed content: summaries, filters, directories, profiles, content details, settings, and form groups. Use `Card` or `bg-surface` on those containers so the warm page canvas remains visible around them. Reserve muted surfaces for small supporting elements and keep semantic feedback colors for alerts.
+
 ### Typography
 
 - UI font: system sans-serif.

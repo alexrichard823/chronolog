@@ -24,14 +24,14 @@ export default async function InvitationAcceptancePage({ searchParams }: Props) 
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!token) {
-    return <main className="flex min-h-screen items-center justify-center p-6"><section className="w-full max-w-lg rounded-xl border p-8"><h1 className="text-3xl font-semibold">Invitation unavailable</h1><p className="mt-3 text-gray-600">This invitation link is incomplete or no longer valid.</p><Link href="/families" className="mt-6 inline-block rounded border px-4 py-2">Go to your families</Link></section></main>;
+    return <main className="flex min-h-screen items-center justify-center p-6"><section className="w-full max-w-lg rounded-xl border bg-surface p-8"><h1 className="text-3xl font-semibold">Invitation unavailable</h1><p className="mt-3 text-gray-600">This invitation link is incomplete or no longer valid.</p><Link href="/families" className="mt-6 inline-block rounded border px-4 py-2">Go to your families</Link></section></main>;
   }
 
   if (!user) {
     const next = encodeURIComponent(invitePath);
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
-        <section className="w-full max-w-lg rounded-xl border p-8">
+        <section className="w-full max-w-lg rounded-xl border bg-surface p-8">
           <p className="text-sm font-medium uppercase tracking-wide text-gray-500">Chronolog invitation</p>
           <h1 className="mt-2 text-3xl font-semibold">Sign in to continue</h1>
           <p className="mt-3 text-gray-600">Use the email address that received this invitation. After you sign in or confirm a new account, Chronolog will bring you back here.</p>
@@ -50,13 +50,13 @@ export default async function InvitationAcceptancePage({ searchParams }: Props) 
   const explicitError = errorCode === "wrong-email" ? "This invitation belongs to a different email address." : errorCode === "already-member" ? "This account already belongs to the family." : errorCode === "invalid" ? "This invitation is invalid, expired, revoked, or already used." : null;
 
   if (invalid) {
-    return <main className="flex min-h-screen items-center justify-center p-6"><section className="w-full max-w-lg rounded-xl border p-8"><h1 className="text-3xl font-semibold">Invitation unavailable</h1><p className="mt-3 text-gray-600">{explicitError ?? "This invitation is invalid, expired, revoked, or already used."}</p><Link href="/families" className="mt-6 inline-block rounded border px-4 py-2">Go to your families</Link></section></main>;
+    return <main className="flex min-h-screen items-center justify-center p-6"><section className="w-full max-w-lg rounded-xl border bg-surface p-8"><h1 className="text-3xl font-semibold">Invitation unavailable</h1><p className="mt-3 text-gray-600">{explicitError ?? "This invitation is invalid, expired, revoked, or already used."}</p><Link href="/families" className="mt-6 inline-block rounded border px-4 py-2">Go to your families</Link></section></main>;
   }
 
   if (!preview.email_matches || errorCode === "wrong-email") {
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
-        <section className="w-full max-w-lg rounded-xl border p-8">
+        <section className="w-full max-w-lg rounded-xl border bg-surface p-8">
           <h1 className="text-3xl font-semibold">Wrong signed-in account</h1>
           <p className="mt-3 text-gray-600">This invitation was sent to a different email address. Sign out, then reopen the invitation using the account that received it.</p>
           <p className="mt-4 text-sm text-gray-500">You are currently signed in as {user.email}.</p>
@@ -68,7 +68,7 @@ export default async function InvitationAcceptancePage({ searchParams }: Props) 
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
-      <section className="w-full max-w-lg rounded-xl border p-8">
+      <section className="w-full max-w-lg rounded-xl border bg-surface p-8">
         <p className="text-sm font-medium uppercase tracking-wide text-gray-500">Chronolog invitation</p>
         <h1 className="mt-2 text-3xl font-semibold">Join {preview.family_name}</h1>
         <p className="mt-3 text-gray-600">You have been invited as an <strong>{roleLabel(preview.role)}</strong>.</p>

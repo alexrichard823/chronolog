@@ -223,7 +223,7 @@ export function MediaUploadForm({
         <legend className="text-sm font-medium">People shown or heard</legend>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           {people.map((person) => (
-            <label key={person.id} className="flex items-center gap-2 rounded border p-3 text-sm">
+            <label key={person.id} className="flex items-center gap-2 rounded border bg-surface p-3 text-sm">
               <input type="checkbox" name="personIds" value={person.id} defaultChecked={person.id === defaultPersonId} />
               {person.label}
             </label>
@@ -236,7 +236,7 @@ export function MediaUploadForm({
         <legend className="text-sm font-medium">Related events</legend>
         <div className="mt-3 space-y-2">
           {events.map((item) => (
-            <label key={item.id} className="flex items-center gap-2 rounded border p-3 text-sm">
+            <label key={item.id} className="flex items-center gap-2 rounded border bg-surface p-3 text-sm">
               <input type="checkbox" name="eventIds" value={item.id} defaultChecked={item.id === defaultEventId} />
               {item.label}
             </label>
@@ -249,7 +249,7 @@ export function MediaUploadForm({
         <legend className="text-sm font-medium">Related stories</legend>
         <div className="mt-3 space-y-2">
           {stories.map((item) => (
-            <label key={item.id} className="flex items-center gap-2 rounded border p-3 text-sm">
+            <label key={item.id} className="flex items-center gap-2 rounded border bg-surface p-3 text-sm">
               <input type="checkbox" name="storyIds" value={item.id} defaultChecked={item.id === defaultStoryId} />
               {item.label}
             </label>

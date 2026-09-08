@@ -52,7 +52,7 @@ export default async function FamilyTreePage({ params, searchParams }: Props) {
     return (
       <main className="mx-auto w-full max-w-4xl p-8">
         <Link href={`/families/${familyId}`} className="text-sm underline">Back to {familyResult.data.name}</Link>
-        <section className="mt-6 rounded-xl border p-8 text-center">
+        <section className="mt-6 rounded-xl border bg-surface p-8 text-center">
           <h1 className="text-2xl font-semibold">Family tree</h1>
           <p className="mt-3 text-gray-600">Add the first person before building the tree.</p>
           <Link href={`/families/${familyId}/people/new`} className="mt-5 inline-block rounded bg-black px-4 py-2 text-white">Add Person</Link>

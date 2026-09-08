@@ -24,7 +24,7 @@ export default function DateFields({
   const initialYear = initialDateStart?.slice(0, 4) ?? "";
 
   return (
-    <fieldset className="rounded-lg border p-4">
+    <fieldset className="rounded-lg border bg-surface p-4">
       <legend className="px-1 text-sm font-medium">{label}</legend>
 
       <label htmlFor={`${prefix}Precision`} className="block text-sm text-gray-600">

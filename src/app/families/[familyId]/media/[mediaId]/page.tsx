@@ -59,7 +59,7 @@ export default async function MediaDetailPage({ params, searchParams }: Props) {
       {updated === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Media updated successfully.</p>}
       {errorCode === "delete-failed" && <p className="mt-6 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700">We could not delete this media item.</p>}
 
-      <section className="mt-6 rounded-xl border p-6">
+      <section className="mt-6 rounded-xl border bg-surface p-6">
         <p className="text-sm font-medium uppercase tracking-wide text-gray-500">{media.media_type}</p>
         <h1 className="mt-1 text-3xl font-semibold">{media.title}</h1>
         <p className="mt-2 text-sm text-gray-500">{formatDate(media.date_captured) || "Date unknown"} · {formatFileSize(media.file_size_bytes)}</p>
@@ -68,12 +68,12 @@ export default async function MediaDetailPage({ params, searchParams }: Props) {
       </section>
 
       <section className="mt-6 grid gap-6 md:grid-cols-3">
-        <div className="rounded-xl border p-5"><h2 className="font-semibold">People</h2>{(peopleResult.data ?? []).length ? <ul className="mt-3 space-y-2 text-sm">{(peopleResult.data ?? []).map((person) => <li key={person.id}><Link className="underline" href={`/families/${familyId}/people/${person.id}`}>{person.display_name}</Link></li>)}</ul> : <p className="mt-3 text-sm text-gray-500">No people linked.</p>}</div>
-        <div className="rounded-xl border p-5"><h2 className="font-semibold">Events</h2>{(eventsResult.data ?? []).length ? <ul className="mt-3 space-y-2 text-sm">{(eventsResult.data ?? []).map((item) => <li key={item.id}><Link className="underline" href={`/families/${familyId}/events/${item.id}`}>{item.title}</Link>{item.date_display ? <span className="text-gray-500"> · {item.date_display}</span> : null}</li>)}</ul> : <p className="mt-3 text-sm text-gray-500">No events linked.</p>}</div>
-        <div className="rounded-xl border p-5"><h2 className="font-semibold">Stories</h2>{(storiesResult.data ?? []).length ? <ul className="mt-3 space-y-2 text-sm">{(storiesResult.data ?? []).map((item) => <li key={item.id}><Link className="underline" href={`/families/${familyId}/stories/${item.id}`}>{item.title}</Link>{item.date_display ? <span className="text-gray-500"> · {item.date_display}</span> : null}</li>)}</ul> : <p className="mt-3 text-sm text-gray-500">No stories linked.</p>}</div>
+        <div className="rounded-xl border bg-surface p-5"><h2 className="font-semibold">People</h2>{(peopleResult.data ?? []).length ? <ul className="mt-3 space-y-2 text-sm">{(peopleResult.data ?? []).map((person) => <li key={person.id}><Link className="underline" href={`/families/${familyId}/people/${person.id}`}>{person.display_name}</Link></li>)}</ul> : <p className="mt-3 text-sm text-gray-500">No people linked.</p>}</div>
+        <div className="rounded-xl border bg-surface p-5"><h2 className="font-semibold">Events</h2>{(eventsResult.data ?? []).length ? <ul className="mt-3 space-y-2 text-sm">{(eventsResult.data ?? []).map((item) => <li key={item.id}><Link className="underline" href={`/families/${familyId}/events/${item.id}`}>{item.title}</Link>{item.date_display ? <span className="text-gray-500"> · {item.date_display}</span> : null}</li>)}</ul> : <p className="mt-3 text-sm text-gray-500">No events linked.</p>}</div>
+        <div className="rounded-xl border bg-surface p-5"><h2 className="font-semibold">Stories</h2>{(storiesResult.data ?? []).length ? <ul className="mt-3 space-y-2 text-sm">{(storiesResult.data ?? []).map((item) => <li key={item.id}><Link className="underline" href={`/families/${familyId}/stories/${item.id}`}>{item.title}</Link>{item.date_display ? <span className="text-gray-500"> · {item.date_display}</span> : null}</li>)}</ul> : <p className="mt-3 text-sm text-gray-500">No stories linked.</p>}</div>
       </section>
 
-      <section className="mt-6 rounded-xl border p-5 text-sm text-gray-600"><p><span className="font-medium text-gray-800">Original file:</span> {media.original_filename}</p><p className="mt-1"><span className="font-medium text-gray-800">Type:</span> {media.mime_type}</p></section>
+      <section className="mt-6 rounded-xl border bg-surface p-5 text-sm text-gray-600"><p><span className="font-medium text-gray-800">Original file:</span> {media.original_filename}</p><p className="mt-1"><span className="font-medium text-gray-800">Type:</span> {media.mime_type}</p></section>
     </main>
   );
 }

@@ -22,7 +22,7 @@ export function AddContentMenu({ familyId, personId }: Props) {
   ];
 
   useEffect(() => {
-    function dismissOutside(event: PointerEvent) {
+    function dismissOutside(event: PointerEvent | FocusEvent) {
       const details = detailsRef.current;
       if (details?.open && event.target instanceof Node && !details.contains(event.target)) {
         details.open = false;
@@ -30,18 +30,19 @@ export function AddContentMenu({ familyId, personId }: Props) {
     }
 
     document.addEventListener("pointerdown", dismissOutside);
-    return () => document.removeEventListener("pointerdown", dismissOutside);
+    // On touch devices, blur can have no relatedTarget before a link receives
+    // its click. Close only when focus actually arrives outside the menu.
+    document.addEventListener("focusin", dismissOutside);
+    return () => {
+      document.removeEventListener("pointerdown", dismissOutside);
+      document.removeEventListener("focusin", dismissOutside);
+    };
   }, []);
 
   return (
     <details
       ref={detailsRef}
       className="ui-add-menu"
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
-          event.currentTarget.open = false;
-        }
-      }}
       onKeyDown={(event) => {
         if (event.key === "Escape" && event.currentTarget.open) {
           event.preventDefault();
@@ -61,7 +62,7 @@ export function AddContentMenu({ familyId, personId }: Props) {
           <li key={option.label}>
             <Link
               href={option.href}
-              onClick={() => {
+              onNavigate={() => {
                 if (detailsRef.current) detailsRef.current.open = false;
               }}
             >

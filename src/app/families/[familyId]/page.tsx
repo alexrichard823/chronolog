@@ -77,41 +77,35 @@ export default async function FamilyDashboardPage({ params, searchParams }: Fami
         </div>
       </Card>
 
-      <Card className="mt-6 p-5 sm:p-6" aria-labelledby="recent-people-heading">
-        <div className="flex flex-wrap items-center justify-between gap-x-4">
-          <h2 id="recent-people-heading" className="text-lg font-semibold">People</h2>
-          <Link href={`/families/${familyId}/people`} className="inline-flex min-h-11 items-center text-sm underline hover:text-primary" aria-label="View all people">View all</Link>
-        </div>
-        <p className="text-sm text-muted">Recently added to this archive.</p>
-        {peopleResult.error ? (
-          <p className="mt-4 text-sm text-danger" role="status">We could not load recent people. Please refresh and try again.</p>
-        ) : recentPeople.length ? (
-          <ul className="mt-4 divide-y divide-border">
-            {recentPeople.map((person) => (
-              <li key={person.id}>
-                <Link href={`/families/${familyId}/people/${person.id}`} className="block min-h-11 py-3 hover:text-primary">
-                  <p className="font-medium wrap-anywhere">{person.display_name}</p>
-                  {(person.birth_date_display || person.death_date_display) && (
-                    <p className="mt-1 text-sm text-muted">
-                      {[person.birth_date_display && `Born ${person.birth_date_display}`, person.death_date_display && `Died ${person.death_date_display}`].filter(Boolean).join(" · ")}
-                    </p>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : <p className="mt-4 text-muted">No people have been added yet.</p>}
-      </Card>
+      <div className="mt-6 grid items-start gap-6 md:grid-cols-2">
+        <Card className="p-5 sm:p-6" aria-labelledby="recent-people-heading">
+          <div className="flex flex-wrap items-center justify-between gap-x-4">
+            <h2 id="recent-people-heading" className="text-lg font-semibold">People</h2>
+            <Link href={`/families/${familyId}/people`} className="inline-flex min-h-11 items-center text-sm underline hover:text-primary" aria-label="View all people">View all</Link>
+          </div>
+          {peopleResult.error ? (
+            <p className="mt-4 text-sm text-danger" role="status">We could not load recent people. Please refresh and try again.</p>
+          ) : recentPeople.length ? (
+            <ul className="mt-2">
+              {recentPeople.map((person) => (
+                <li key={person.id}>
+                  <Link href={`/families/${familyId}/people/${person.id}`} className="flex min-h-11 items-center py-2 font-medium underline wrap-anywhere hover:text-primary">
+                    {person.display_name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : <p className="mt-4 text-muted">No people have been added yet.</p>}
+        </Card>
 
-      <section className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="rounded-xl border p-6"><h2 className="text-lg font-semibold">Recent events</h2>{(eventsResult.data ?? []).length ? <ul className="mt-4 space-y-4">{(eventsResult.data ?? []).map((event) => <li key={event.id}><Link href={`/families/${familyId}/events/${event.id}`} className="font-medium underline">{event.title}</Link><p className="mt-1 text-sm capitalize text-gray-500">{event.event_type.replaceAll("_", " ")}{event.date_display ? ` · ${event.date_display}` : " · Date unknown"}</p></li>)}</ul> : <p className="mt-4 text-gray-500">No events yet.</p>}</div>
-        <div className="rounded-xl border p-6"><h2 className="text-lg font-semibold">Recent stories</h2>{(storiesResult.data ?? []).length ? <div className="mt-4 space-y-4">{(storiesResult.data ?? []).map((story) => <article key={story.id}><h3 className="font-medium"><Link className="underline" href={`/families/${familyId}/stories/${story.id}`}>{story.title}</Link></h3><p className="mt-1 text-sm text-gray-500">{story.date_display || "Date unknown"}</p><p className="mt-2 line-clamp-3 text-sm text-gray-700">{story.content}</p></article>)}</div> : <p className="mt-4 text-gray-500">No stories yet.</p>}</div>
-      </section>
+        <div className="rounded-xl border bg-surface p-6"><h2 className="text-lg font-semibold">Recent events</h2>{(eventsResult.data ?? []).length ? <ul className="mt-4 space-y-4">{(eventsResult.data ?? []).map((event) => <li key={event.id}><Link href={`/families/${familyId}/events/${event.id}`} className="font-medium underline">{event.title}</Link><p className="mt-1 text-sm capitalize text-gray-500">{event.event_type.replaceAll("_", " ")}{event.date_display ? ` · ${event.date_display}` : " · Date unknown"}</p></li>)}</ul> : <p className="mt-4 text-gray-500">No events yet.</p>}</div>
+        <div className="rounded-xl border bg-surface p-6"><h2 className="text-lg font-semibold">Recent stories</h2>{(storiesResult.data ?? []).length ? <div className="mt-4 space-y-4">{(storiesResult.data ?? []).map((story) => <article key={story.id}><h3 className="font-medium"><Link className="underline" href={`/families/${familyId}/stories/${story.id}`}>{story.title}</Link></h3><p className="mt-1 text-sm text-gray-500">{story.date_display || "Date unknown"}</p><p className="mt-2 line-clamp-3 text-sm text-gray-700">{story.content}</p></article>)}</div> : <p className="mt-4 text-gray-500">No stories yet.</p>}</div>
 
-      <section className="mt-6 rounded-xl border p-6">
-        <div className="flex items-center justify-between gap-4"><h2 className="text-lg font-semibold">Recent media</h2><Link href={`/families/${familyId}/media`} className="text-sm underline">View all media</Link></div>
-        {media.length ? <div className="mt-5 grid gap-4 sm:grid-cols-2">{media.map((item) => <article key={item.id} className="rounded-lg border p-4">{item.media_type === "image" ? <MediaPreview mediaType="image" signedUrl={signedByPath.get(item.storage_path) ?? null} title={item.title} compact /> : <div className="flex h-24 items-center justify-center rounded-lg bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">{item.media_type}</div>}<h3 className="mt-3 font-medium"><Link className="underline" href={`/families/${familyId}/media/${item.id}`}>{item.title}</Link></h3></article>)}</div> : <p className="mt-4 text-gray-500">No media yet.</p>}
-      </section>
+        <section className="rounded-xl border bg-surface p-6">
+          <div className="flex items-center justify-between gap-4"><h2 className="text-lg font-semibold">Recent media</h2><Link href={`/families/${familyId}/media`} className="text-sm underline">View all media</Link></div>
+          {media.length ? <div className="mt-5 grid gap-4 sm:grid-cols-2">{media.map((item) => <article key={item.id} className="rounded-lg border bg-surface p-4">{item.media_type === "image" ? <MediaPreview mediaType="image" signedUrl={signedByPath.get(item.storage_path) ?? null} title={item.title} compact /> : <div className="flex h-24 items-center justify-center rounded-lg bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">{item.media_type}</div>}<h3 className="mt-3 font-medium"><Link className="underline" href={`/families/${familyId}/media/${item.id}`}>{item.title}</Link></h3></article>)}</div> : <p className="mt-4 text-gray-500">No media yet.</p>}
+        </section>
+      </div>
     </main>
   );
 }

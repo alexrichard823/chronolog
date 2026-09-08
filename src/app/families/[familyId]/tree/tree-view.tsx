@@ -97,7 +97,7 @@ export function TreeView({ familyId, familyName, people, relationships, subjectI
           </div>
         </div>
 
-        <div className="h-[72vh] min-h-[520px] overflow-hidden rounded-xl border bg-gray-50">
+        <div className="h-[72vh] min-h-[520px] overflow-hidden rounded-xl border bg-surface">
           <div
             className="h-full origin-center"
             style={{

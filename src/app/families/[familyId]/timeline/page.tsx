@@ -205,7 +205,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
         </Link>
       </div>
 
-      <section className="mt-6 rounded-xl border p-6">
+      <section className="mt-6 rounded-xl border bg-surface p-6">
         <p className="text-sm font-medium uppercase tracking-wide text-gray-500">Family archive</p>
         <h1 className="mt-1 text-3xl font-semibold">Family Timeline</h1>
         <p className="mt-2 text-gray-600">
@@ -213,7 +213,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
         </p>
       </section>
 
-      <section className="mt-6 rounded-xl border p-6">
+      <section className="mt-6 rounded-xl border bg-surface p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold">Filter timeline</h2>
@@ -312,7 +312,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
                     <div>
                       <h4 className="text-sm font-semibold">Story</h4>
                       {previewStory ? (
-                        <div className="mt-2 rounded-lg border p-3">
+                        <div className="mt-2 rounded-lg border bg-surface p-3">
                           <Link className="font-medium underline" href={`/families/${familyId}/stories/${previewStory.id}`}>{previewStory.title}</Link>
                           <p className="mt-2 line-clamp-3 text-sm text-gray-600">{previewStory.content}</p>
                           {linkedStories.length > 1 && <p className="mt-2 text-xs text-gray-500">+{linkedStories.length - 1} more linked {linkedStories.length - 1 === 1 ? "story" : "stories"}</p>}
@@ -323,7 +323,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
                     <div>
                       <h4 className="text-sm font-semibold">Media</h4>
                       {previewMedia ? (
-                        <div className="mt-2 rounded-lg border p-3">
+                        <div className="mt-2 rounded-lg border bg-surface p-3">
                           {previewMedia.media_type === "image" ? (
                             <MediaPreview mediaType="image" signedUrl={signedByPath.get(previewMedia.storage_path) ?? null} title={previewMedia.title} compact />
                           ) : (
@@ -342,7 +342,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
             })}
           </div>
         ) : (
-          <div className="mt-6 rounded-xl border p-6 text-gray-500">
+          <div className="mt-6 rounded-xl border bg-surface p-6 text-gray-500">
             {selectedPersonId || selectedEventType ? "No events match these filters." : "No events have been added to this family yet."}
           </div>
         )}

@@ -54,7 +54,7 @@ export default async function DeletedFamiliesPage({ searchParams }: Props) {
       ) : deletedFamilies.length ? (
         <div className="mt-8 space-y-5">
           {deletedFamilies.map((family) => (
-            <section key={family.family_id} className="rounded-xl border p-5">
+            <section key={family.family_id} className="rounded-xl border bg-surface p-5">
               <h2 className="text-xl font-semibold">{family.family_name}</h2>
               <p className="mt-2 text-sm text-gray-600">Deleted {formatDate(family.requested_at)} · Restore through {formatDate(family.recover_until)}</p>
               <form action={restoreFamily} className="mt-5">
@@ -81,7 +81,7 @@ export default async function DeletedFamiliesPage({ searchParams }: Props) {
           ))}
         </div>
       ) : (
-        <div className="mt-8 rounded-lg border border-dashed p-8 text-center">
+        <div className="mt-8 rounded-lg border bg-surface border-dashed p-8 text-center">
           <h2 className="text-xl font-semibold">No recently deleted archives</h2>
           <p className="mt-2 text-gray-600">Archives moved here remain recoverable for 30 days.</p>
         </div>

@@ -44,14 +44,14 @@ export default async function MediaLibraryPage({ params, searchParams }: Props) 
       {media.length ? (
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {media.map((item) => (
-            <article key={item.id} className="overflow-hidden rounded-xl border">
+            <article key={item.id} className="overflow-hidden rounded-xl border bg-surface">
               {item.media_type === "image" ? <div className="p-3 pb-0"><MediaPreview mediaType="image" signedUrl={signedByPath.get(item.storage_path) ?? null} title={item.title} compact /></div> : <div className="flex h-36 items-center justify-center bg-gray-50 text-sm font-medium uppercase tracking-wide text-gray-500">{item.media_type}</div>}
               <div className="p-4"><p className="text-xs font-medium uppercase tracking-wide text-gray-500">{item.media_type} · {formatFileSize(item.file_size_bytes)}</p><h2 className="mt-1 text-lg font-semibold"><Link className="underline" href={`/families/${familyId}/media/${item.id}`}>{item.title}</Link></h2>{item.date_captured && <p className="mt-1 text-sm text-gray-500">{item.date_captured}</p>}{item.description && <p className="mt-2 line-clamp-3 text-sm text-gray-700">{item.description}</p>}</div>
             </article>
           ))}
         </div>
       ) : (
-        <div className="mt-8 rounded-xl border p-8 text-center"><h2 className="text-lg font-semibold">No media yet</h2><p className="mt-2 text-gray-600">Start with a meaningful photograph, family interview, home video, or document.</p>{canEdit && <Link href={`/families/${familyId}/media/new`} className="mt-5 inline-block rounded bg-black px-4 py-2 text-white">Upload the first item</Link>}</div>
+        <div className="mt-8 rounded-xl border bg-surface p-8 text-center"><h2 className="text-lg font-semibold">No media yet</h2><p className="mt-2 text-gray-600">Start with a meaningful photograph, family interview, home video, or document.</p>{canEdit && <Link href={`/families/${familyId}/media/new`} className="mt-5 inline-block rounded bg-black px-4 py-2 text-white">Upload the first item</Link>}</div>
       )}
     </main>
   );
