@@ -63,7 +63,7 @@ export default async function EditRelationshipPage({ params, searchParams }: Pro
         <div><label htmlFor="partnerStatus" className="block text-sm font-medium">Spouse / partner status</label><select id="partnerStatus" name="partnerStatus" defaultValue={relationship.partner_status ?? "partner"} className="mt-2 w-full rounded border px-3 py-2"><option value="partner">Partner</option><option value="married">Married</option><option value="separated">Separated</option><option value="divorced">Divorced</option><option value="widowed">Widowed</option><option value="ended">Ended</option></select><p className="mt-2 text-xs text-gray-500">Used only for Spouse / partner relationships.</p></div>
         <div><label htmlFor="notes" className="block text-sm font-medium">Notes</label><textarea id="notes" name="notes" rows={4} defaultValue={relationship.notes ?? ""} className="mt-2 w-full rounded border px-3 py-2" /></div>
 
-        <div className="flex flex-wrap gap-3"><button type="submit" className="rounded bg-black px-4 py-2 text-white">Save relationship</button><Link href={`/families/${familyId}/people/${returnPersonId}`} className="rounded border px-4 py-2">Cancel</Link></div>
+        <div className="flex flex-wrap gap-3"><button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Save relationship</button><Link href={`/families/${familyId}/people/${returnPersonId}`} className="rounded border px-4 py-2">Cancel</Link></div>
       </form>
 
       <section className="mt-10 rounded-xl border bg-surface border-red-200 p-5">

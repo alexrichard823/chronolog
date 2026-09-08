@@ -63,7 +63,7 @@ export default async function EditPersonPage({ params, searchParams }: Props) {
         <div><label htmlFor="biography" className="block text-sm font-medium">Biography</label><textarea id="biography" name="biography" rows={6} defaultValue={person.biography ?? ""} className="mt-2 w-full rounded border px-3 py-2" /></div>
         <div><label htmlFor="notes" className="block text-sm font-medium">Notes</label><textarea id="notes" name="notes" rows={4} defaultValue={person.notes ?? ""} className="mt-2 w-full rounded border px-3 py-2" /></div>
 
-        <div className="flex gap-3"><button type="submit" className="rounded bg-black px-4 py-2 text-white">Save changes</button><Link href={`/families/${familyId}/people/${personId}`} className="rounded border px-4 py-2">Cancel</Link></div>
+        <div className="flex gap-3"><button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Save changes</button><Link href={`/families/${familyId}/people/${personId}`} className="rounded border px-4 py-2">Cancel</Link></div>
       </form>
     </main>
   );

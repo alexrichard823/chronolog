@@ -33,7 +33,7 @@ export default async function MediaLibraryPage({ params, searchParams }: Props) 
       <Link href={`/families/${familyId}`} className="text-sm underline">Back to {familyResult.data.name}</Link>
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div><p className="text-sm font-medium uppercase tracking-wide text-gray-500">Private family archive</p><h1 className="mt-1 text-3xl font-semibold">Media</h1><p className="mt-2 text-gray-600">Photos, recordings, videos, and documents connected to your family history.</p></div>
-        {canEdit && <Link href={`/families/${familyId}/media/new`} className="rounded bg-black px-4 py-2 text-center text-white">Add Media</Link>}
+        {canEdit && <Link href={`/families/${familyId}/media/new`} className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-center text-white">Add Media</Link>}
       </div>
 
       {mediaDeleted === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Media deleted successfully.</p>}
@@ -51,7 +51,7 @@ export default async function MediaLibraryPage({ params, searchParams }: Props) 
           ))}
         </div>
       ) : (
-        <div className="mt-8 rounded-xl border bg-surface p-8 text-center"><h2 className="text-lg font-semibold">No media yet</h2><p className="mt-2 text-gray-600">Start with a meaningful photograph, family interview, home video, or document.</p>{canEdit && <Link href={`/families/${familyId}/media/new`} className="mt-5 inline-block rounded bg-black px-4 py-2 text-white">Upload the first item</Link>}</div>
+        <div className="mt-8 rounded-xl border bg-surface p-8 text-center"><h2 className="text-lg font-semibold">No media yet</h2><p className="mt-2 text-gray-600">Start with a meaningful photograph, family interview, home video, or document.</p>{canEdit && <Link href={`/families/${familyId}/media/new`} className="mt-5 inline-block rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Upload the first item</Link>}</div>
       )}
     </main>
   );

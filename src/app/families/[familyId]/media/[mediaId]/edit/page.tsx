@@ -49,7 +49,7 @@ export default async function EditMediaPage({ params, searchParams }: Props) {
       <fieldset><legend className="text-sm font-medium">Related events</legend><div className="mt-3 space-y-2">{(eventsResult.data ?? []).map((item) => <label key={item.id} className="flex items-center gap-2 rounded border bg-surface p-3 text-sm"><input type="checkbox" name="eventIds" value={item.id} defaultChecked={linkedEvents.has(item.id)} /><span>{item.title}{item.date_display ? ` — ${item.date_display}` : ""}</span></label>)}</div></fieldset>
       <fieldset><legend className="text-sm font-medium">Related stories</legend><div className="mt-3 space-y-2">{(storiesResult.data ?? []).map((item) => <label key={item.id} className="flex items-center gap-2 rounded border bg-surface p-3 text-sm"><input type="checkbox" name="storyIds" value={item.id} defaultChecked={linkedStories.has(item.id)} /><span>{item.title}{item.date_display ? ` — ${item.date_display}` : ""}</span></label>)}</div></fieldset>
 
-      <div className="flex gap-3"><button type="submit" className="rounded bg-black px-4 py-2 text-white">Save changes</button><Link href={`/families/${familyId}/media/${mediaId}`} className="rounded border px-4 py-2">Cancel</Link></div>
+      <div className="flex gap-3"><button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Save changes</button><Link href={`/families/${familyId}/media/${mediaId}`} className="rounded border px-4 py-2">Cancel</Link></div>
     </form>
   </main>;
 }

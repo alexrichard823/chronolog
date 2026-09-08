@@ -49,7 +49,7 @@ export function InvitationPasswordForm({ token }: Props) {
         <label htmlFor="confirmPassword" className="block text-sm font-medium">Confirm password</label>
         <input id="confirmPassword" type="password" minLength={12} required autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} className="mt-2 w-full rounded border px-3 py-2" />
       </div>
-      <button type="submit" disabled={loading} className="w-full rounded bg-black px-4 py-3 font-medium text-white disabled:opacity-50">{loading ? "Saving password…" : "Save password and continue"}</button>
+      <button type="submit" disabled={loading} className="w-full rounded bg-primary hover:bg-primary-hover px-4 py-3 font-medium text-white disabled:opacity-50">{loading ? "Saving password…" : "Save password and continue"}</button>
       {message && <p className="text-sm text-red-700">{message}</p>}
     </form>
   );

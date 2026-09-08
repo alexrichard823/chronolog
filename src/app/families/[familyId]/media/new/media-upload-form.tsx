@@ -258,7 +258,7 @@ export function MediaUploadForm({
         {stories.length === 0 && <p className="mt-2 text-sm text-gray-500">No stories have been added yet.</p>}
       </fieldset>
 
-      <button type="submit" disabled={submitting} className="rounded bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60">
+      <button type="submit" disabled={submitting} className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60">
         {submitting ? "Uploading..." : "Upload media"}
       </button>
     </form>

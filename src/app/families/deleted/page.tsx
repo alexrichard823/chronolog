@@ -59,7 +59,7 @@ export default async function DeletedFamiliesPage({ searchParams }: Props) {
               <p className="mt-2 text-sm text-gray-600">Deleted {formatDate(family.requested_at)} · Restore through {formatDate(family.recover_until)}</p>
               <form action={restoreFamily} className="mt-5">
                 <input type="hidden" name="familyId" value={family.family_id} />
-                <button type="submit" className="rounded bg-black px-4 py-2 text-sm text-white">Restore archive</button>
+                <button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white">Restore archive</button>
               </form>
 
               <details className="mt-5 border-t pt-4">

@@ -55,7 +55,7 @@ export default async function EditFamilyPage({ params, searchParams }: Props) {
         <input type="hidden" name="familyId" value={familyId} />
         <div><label htmlFor="name" className="block text-sm font-medium">Family name</label><input id="name" name="name" required minLength={1} maxLength={120} defaultValue={family.name} className="mt-2 w-full rounded border px-3 py-2" /></div>
         <div><label htmlFor="description" className="block text-sm font-medium">Description</label><textarea id="description" name="description" rows={5} defaultValue={family.description ?? ""} className="mt-2 w-full rounded border px-3 py-2" /></div>
-        <div className="flex gap-3"><button type="submit" className="rounded bg-black px-4 py-2 text-white">Save archive</button><Link href={`/families/${familyId}`} className="rounded border px-4 py-2">Cancel</Link></div>
+        <div className="flex gap-3"><button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Save archive</button><Link href={`/families/${familyId}`} className="rounded border px-4 py-2">Cancel</Link></div>
       </form>
 
       {role === "owner" && (

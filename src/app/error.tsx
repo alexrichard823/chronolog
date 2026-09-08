@@ -10,7 +10,7 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
           Your family archive has not been intentionally changed by this error. Try the action again, or return to your families.
         </p>
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-          <button type="button" onClick={() => reset()} className="rounded bg-black px-5 py-3 font-medium text-white">
+          <button type="button" onClick={() => reset()} className="rounded bg-primary hover:bg-primary-hover px-5 py-3 font-medium text-white">
             Try again
           </button>
           <a href="/families" className="rounded border border-gray-300 px-5 py-3 font-medium">
