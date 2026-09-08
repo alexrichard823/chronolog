@@ -13,6 +13,7 @@ export type TreePersonRecord = {
   display_name: string;
   birth_date_display: string | null;
   death_date_display: string | null;
+  photoUrl?: string | null;
 };
 
 export type TreeRelationshipRecord = {
