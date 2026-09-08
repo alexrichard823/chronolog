@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { AddContentMenu } from "@/components/add-content-menu";
 import { MediaPreview } from "@/components/media-preview";
+import { ButtonLink, Card } from "@/components/ui";
 import { createSignedMediaMap, type MediaRecord } from "@/lib/media";
 import { createClient } from "@/lib/supabase/server";
 
@@ -16,12 +18,14 @@ export default async function FamilyDashboardPage({ params, searchParams }: Fami
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [familyResult, eventsResult, storiesResult, mediaResult, membershipResult] = await Promise.all([
+  const [familyResult, eventsResult, storiesResult, mediaResult, membershipResult, memberCountResult, peopleResult] = await Promise.all([
     supabase.from("families").select("id, name, description").eq("id", familyId).maybeSingle(),
     supabase.from("events").select("id, title, event_type, date_display").eq("family_id", familyId).order("created_at", { ascending: false }).limit(5),
     supabase.from("stories").select("id, title, content, date_display").eq("family_id", familyId).order("created_at", { ascending: false }).limit(5),
     supabase.from("media_items").select("id, title, description, media_type, storage_path, original_filename, mime_type, file_size_bytes, date_captured, created_at").eq("family_id", familyId).order("created_at", { ascending: false }).limit(4),
     supabase.from("family_memberships").select("role").eq("family_id", familyId).eq("user_id", user.id).maybeSingle(),
+    supabase.from("family_memberships").select("id", { count: "exact", head: true }).eq("family_id", familyId),
+    supabase.from("people").select("id, display_name, birth_date_display, death_date_display").eq("family_id", familyId).order("created_at", { ascending: false }).order("id").limit(5),
   ]);
 
   const family = familyResult.data;
@@ -32,9 +36,11 @@ export default async function FamilyDashboardPage({ params, searchParams }: Fami
   const role = membershipResult.data?.role;
   const canEdit = Boolean(role && ["owner", "admin", "editor"].includes(role));
   const canManageArchive = Boolean(role && ["owner", "admin"].includes(role));
+  const memberCount = memberCountResult.error ? null : memberCountResult.count;
+  const recentPeople = peopleResult.data ?? [];
 
   return (
-    <main className="mx-auto w-full max-w-4xl p-8">
+    <main className="mx-auto w-full max-w-4xl p-4 sm:p-8">
       <Link href="/families" className="text-sm underline">Back to your families</Link>
 
       {joined === "1" && <p className="mt-6 rounded border border-green-200 bg-green-50 p-4 text-sm text-green-800">Invitation accepted. You now have {role ? `${role} ` : ""}access to this family.</p>}
@@ -48,12 +54,54 @@ export default async function FamilyDashboardPage({ params, searchParams }: Fami
       {errorCode === "no-member-manage-access" && <p className="mt-6 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700">Only the Owner can manage family members.</p>}
       {errorCode === "owner-only-delete" && <p className="mt-6 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700">Only the Owner can delete the family archive.</p>}
 
-      <section className="mt-6 rounded-xl border p-6">
+      <Card className="mt-6 p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div><p className="text-sm font-medium uppercase tracking-wide text-gray-500">Family archive</p><h1 className="mt-1 text-3xl font-semibold">{family.name}</h1>{family.description && <p className="mt-3 max-w-2xl text-gray-600">{family.description}</p>}<p className="mt-3 text-sm text-gray-500">Your role: {role ?? "member"}</p></div>
-          <div className="flex flex-wrap gap-3"><Link href={`/families/${familyId}/people`} className="rounded border px-4 py-2">View People</Link><Link href={`/families/${familyId}/timeline`} className="rounded border px-4 py-2">View Timeline</Link><Link href={`/families/${familyId}/tree`} className="rounded border px-4 py-2">View Tree</Link><Link href={`/families/${familyId}/media`} className="rounded border px-4 py-2">View Media</Link><Link href={`/families/${familyId}/members`} className="rounded border px-4 py-2">Members</Link>{canManageArchive && <Link href={`/families/${familyId}/edit`} className="rounded border px-4 py-2">Edit Archive</Link>}{canEdit && <><Link href={`/families/${familyId}/people/new`} className="rounded border px-4 py-2">Add Person</Link><Link href={`/families/${familyId}/events/new`} className="rounded border px-4 py-2">Add Event</Link><Link href={`/families/${familyId}/media/new`} className="rounded border px-4 py-2">Add Media</Link><Link href={`/families/${familyId}/stories/new`} className="rounded bg-black px-4 py-2 text-white">Add Story</Link></>}</div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium uppercase tracking-wide text-muted">Family archive</p>
+            <h1 className="mt-1 text-3xl font-semibold wrap-anywhere">{family.name}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 text-sm">
+              <Link href={`/families/${familyId}/members`} className="inline-flex min-h-11 items-center gap-1 underline hover:text-primary">
+                {memberCount === null ? "Members" : <><span className="font-semibold">{memberCount}</span> {memberCount === 1 ? "member" : "members"}</>}
+              </Link>
+              <span className="text-muted">Your role: {role ?? "member"}</span>
+            </div>
+            {memberCount === null && <p className="text-sm text-muted">Member count is unavailable. Open Members to try again.</p>}
+            {family.description && <p className="mt-2 max-w-2xl text-muted wrap-anywhere">{family.description}</p>}
+          </div>
+          {canEdit && (
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 self-end sm:self-start">
+              {canManageArchive && <ButtonLink href={`/families/${familyId}/edit`} variant="secondary">Edit Archive</ButtonLink>}
+              <AddContentMenu familyId={familyId} />
+            </div>
+          )}
         </div>
-      </section>
+      </Card>
+
+      <Card className="mt-6 p-5 sm:p-6" aria-labelledby="recent-people-heading">
+        <div className="flex flex-wrap items-center justify-between gap-x-4">
+          <h2 id="recent-people-heading" className="text-lg font-semibold">People</h2>
+          <Link href={`/families/${familyId}/people`} className="inline-flex min-h-11 items-center text-sm underline hover:text-primary" aria-label="View all people">View all</Link>
+        </div>
+        <p className="text-sm text-muted">Recently added to this archive.</p>
+        {peopleResult.error ? (
+          <p className="mt-4 text-sm text-danger" role="status">We could not load recent people. Please refresh and try again.</p>
+        ) : recentPeople.length ? (
+          <ul className="mt-4 divide-y divide-border">
+            {recentPeople.map((person) => (
+              <li key={person.id}>
+                <Link href={`/families/${familyId}/people/${person.id}`} className="block min-h-11 py-3 hover:text-primary">
+                  <p className="font-medium wrap-anywhere">{person.display_name}</p>
+                  {(person.birth_date_display || person.death_date_display) && (
+                    <p className="mt-1 text-sm text-muted">
+                      {[person.birth_date_display && `Born ${person.birth_date_display}`, person.death_date_display && `Died ${person.death_date_display}`].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="mt-4 text-muted">No people have been added yet.</p>}
+      </Card>
 
       <section className="mt-6 grid gap-6 md:grid-cols-2">
         <div className="rounded-xl border p-6"><h2 className="text-lg font-semibold">Recent events</h2>{(eventsResult.data ?? []).length ? <ul className="mt-4 space-y-4">{(eventsResult.data ?? []).map((event) => <li key={event.id}><Link href={`/families/${familyId}/events/${event.id}`} className="font-medium underline">{event.title}</Link><p className="mt-1 text-sm capitalize text-gray-500">{event.event_type.replaceAll("_", " ")}{event.date_display ? ` · ${event.date_display}` : " · Date unknown"}</p></li>)}</ul> : <p className="mt-4 text-gray-500">No events yet.</p>}</div>
