@@ -1,11 +1,12 @@
 # Your Families page revamp
 
-Status: Implemented; desktop/mobile Preview acceptance pending.
+Status: Reviewed by Alex; production release authorized on September 8, 2026.
 
 ## Scope
 
 - Post-login `/families` only, with the approved C brand and shared design tokens/primitives.
 - Whole family cards open their archive. Larger names replace descriptions and the redundant Open family text.
+- Card names retain the word Family, appending it only when the saved name does not already contain it. Saved family names are unchanged.
 - Each card shows people recorded in the archive and current Chronolog members. Pending invitations are excluded.
 - Pointer press adds a subtle green fill/border; Next.js pending navigation keeps the highlight and displays an indicator with a screen-reader announcement. Native links, keyboard focus, modified clicks, and prefetching remain supported.
 - Both Create family actions use the shared green primary button.
@@ -36,4 +37,4 @@ No migrations, dependencies, environment settings, grants, roles, or authorizati
 5. Confirm Recently Deleted is bottom right beside Log out at narrow widths, with long family names and with multiple archives.
 6. Check both Create family actions, Recently Deleted, and Log out still work.
 
-Merge after the user confirms Preview acceptance.
+Alex reviewed the preview, approved its appearance, requested the Family-name follow-up, and then explicitly authorized moving this work to production. The latest code passed the production build, focused lint, and Vercel Preview deployment. Automated browser limitations above remain documented; the release is authorized based on the completed checks and Alex's review.
