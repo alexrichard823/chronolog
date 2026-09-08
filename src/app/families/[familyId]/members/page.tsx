@@ -92,7 +92,7 @@ export default async function FamilyMembersPage({ params, searchParams }: Props)
             <input type="hidden" name="familyId" value={familyId} />
             <div><label htmlFor="email" className="block text-sm font-medium">Email</label><input id="email" name="email" type="email" required maxLength={320} className="mt-2 w-full rounded border px-3 py-2" placeholder="relative@example.com" /></div>
             <div><label htmlFor="role" className="block text-sm font-medium">Role</label><select id="role" name="role" defaultValue="editor" className="mt-2 w-full rounded border px-3 py-2"><option value="admin">Admin</option><option value="editor">Editor</option><option value="viewer">Viewer</option></select></div>
-            <button type="submit" className="rounded bg-black px-4 py-2 text-white">Send invitation</button>
+            <button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Send invitation</button>
           </form>
           <p className="mt-4 text-xs text-gray-500">Admins can help manage archive settings and content. Editors can change family content. Viewers are read-only. Member access and roles remain Owner-controlled.</p>
         </section>

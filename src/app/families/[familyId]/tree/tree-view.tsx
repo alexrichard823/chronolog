@@ -131,7 +131,7 @@ export function TreeView({ familyId, familyName, people, relationships, subjectI
             <p className="mt-1 text-sm text-gray-500">{selectedPerson.lifeDates}</p>
             <div className="mt-5 flex flex-col gap-2">
               {selectedId !== subjectId && (
-                <button type="button" onClick={() => centerOn(selectedId)} className="rounded bg-black px-4 py-2 text-sm text-white">
+                <button type="button" onClick={() => centerOn(selectedId)} className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white">
                   Center tree here
                 </button>
               )}

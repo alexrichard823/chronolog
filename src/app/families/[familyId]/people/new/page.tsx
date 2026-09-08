@@ -82,7 +82,7 @@ export default async function NewPersonPage({ params, searchParams }: NewPersonP
         <DateFields prefix="death" label="Death date" />
 
         <div className="flex gap-3">
-          <button type="submit" className="rounded bg-black px-4 py-2 text-white">
+          <button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">
             Add person
           </button>
           <Link href={`/families/${familyId}/people`} className="rounded border px-4 py-2">

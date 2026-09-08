@@ -47,7 +47,7 @@ export default async function PeoplePage({ params, searchParams }: PeoplePagePro
         </div>
         <Link
           href={`/families/${familyId}/people/new`}
-          className="rounded bg-black px-4 py-2 text-white"
+          className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white"
         >
           Add Person
         </Link>
@@ -85,7 +85,7 @@ export default async function PeoplePage({ params, searchParams }: PeoplePagePro
           <p className="mt-2 text-gray-600">Add the first person to start building this family history.</p>
           <Link
             href={`/families/${familyId}/people/new`}
-            className="mt-5 inline-block rounded bg-black px-4 py-2 text-white"
+            className="mt-5 inline-block rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white"
           >
             Add Person
           </Link>

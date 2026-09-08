@@ -55,7 +55,7 @@ export default async function FamilyTreePage({ params, searchParams }: Props) {
         <section className="mt-6 rounded-xl border bg-surface p-8 text-center">
           <h1 className="text-2xl font-semibold">Family tree</h1>
           <p className="mt-3 text-gray-600">Add the first person before building the tree.</p>
-          <Link href={`/families/${familyId}/people/new`} className="mt-5 inline-block rounded bg-black px-4 py-2 text-white">Add Person</Link>
+          <Link href={`/families/${familyId}/people/new`} className="mt-5 inline-block rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Add Person</Link>
         </section>
       </main>
     );
@@ -73,7 +73,7 @@ export default async function FamilyTreePage({ params, searchParams }: Props) {
           <h1 className="mt-4 text-3xl font-semibold">Family tree</h1>
           <p className="mt-2 text-gray-600">Explore parent-child and spouse or partner relationships around a focal person.</p>
         </div>
-        <Link href={`/families/${familyId}/people/${subjectId}/relationships/new`} className="rounded bg-black px-4 py-2 text-sm text-white">Add Relationship</Link>
+        <Link href={`/families/${familyId}/people/${subjectId}/relationships/new`} className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white">Add Relationship</Link>
       </div>
 
       <div className="mt-6">

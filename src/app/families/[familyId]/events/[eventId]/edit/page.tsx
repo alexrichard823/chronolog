@@ -45,7 +45,7 @@ export default async function EditEventPage({ params, searchParams }: Props) {
       <div><label className="block text-sm font-medium" htmlFor="placeName">Place</label><input id="placeName" name="placeName" maxLength={200} defaultValue={event.place_name ?? ""} className="mt-2 w-full rounded border px-3 py-2" /></div>
       <div><label className="block text-sm font-medium" htmlFor="description">Description</label><textarea id="description" name="description" rows={5} defaultValue={event.description ?? ""} className="mt-2 w-full rounded border px-3 py-2" /></div>
       <fieldset><legend className="text-sm font-medium">People involved</legend><div className="mt-3 grid gap-2 sm:grid-cols-2">{(peopleResult.data ?? []).map((person) => <label key={person.id} className="flex items-center gap-2 rounded border bg-surface p-3 text-sm"><input type="checkbox" name="personIds" value={person.id} defaultChecked={linkedPeople.has(person.id)} />{person.display_name}</label>)}</div></fieldset>
-      <div className="flex gap-3"><button type="submit" className="rounded bg-black px-4 py-2 text-white">Save changes</button><Link href={`/families/${familyId}/events/${eventId}`} className="rounded border px-4 py-2">Cancel</Link></div>
+      <div className="flex gap-3"><button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Save changes</button><Link href={`/families/${familyId}/events/${eventId}`} className="rounded border px-4 py-2">Cancel</Link></div>
     </form>
   </main>;
 }

@@ -66,7 +66,7 @@ export default async function NewFamilyPage({ searchParams }: NewFamilyPageProps
           </p>
         )}
 
-        <button type="submit" className="rounded bg-black px-5 py-2 text-white">
+        <button type="submit" className="rounded bg-primary hover:bg-primary-hover px-5 py-2 text-white">
           Create family
         </button>
       </form>

@@ -164,7 +164,7 @@ export default function RelationshipForm({
         />
       </div>
 
-      <button type="submit" className="rounded bg-black px-4 py-2 text-white">
+      <button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">
         Add relationship
       </button>
     </form>

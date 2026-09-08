@@ -43,7 +43,7 @@ export default async function NewEventPage({ params, searchParams }: Props) {
 
         <fieldset><legend className="text-sm font-medium">People involved</legend><div className="mt-3 grid gap-2 sm:grid-cols-2">{(peopleResult.data ?? []).map((person) => <label key={person.id} className="flex items-center gap-2 rounded border bg-surface p-3 text-sm"><input type="checkbox" name="personIds" value={person.id} defaultChecked={person.id === personId} />{person.display_name}</label>)}</div>{(peopleResult.data ?? []).length === 0 && <p className="mt-2 text-sm text-gray-500">Add people first if you want to connect participants.</p>}</fieldset>
 
-        <div className="flex gap-3"><button type="submit" className="rounded bg-black px-4 py-2 text-white">Create event</button><Link href={`/families/${familyId}`} className="rounded border px-4 py-2">Cancel</Link></div>
+        <div className="flex gap-3"><button type="submit" className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Create event</button><Link href={`/families/${familyId}`} className="rounded border px-4 py-2">Cancel</Link></div>
       </form>
     </main>
   );

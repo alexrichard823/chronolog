@@ -36,7 +36,7 @@ export default async function InvitationAcceptancePage({ searchParams }: Props) 
           <h1 className="mt-2 text-3xl font-semibold">Sign in to continue</h1>
           <p className="mt-3 text-gray-600">Use the email address that received this invitation. After you sign in or confirm a new account, Chronolog will bring you back here.</p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href={`/login?next=${next}`} className="rounded bg-black px-4 py-2 text-white">Log in</Link>
+            <Link href={`/login?next=${next}`} className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-white">Log in</Link>
             <Link href={`/register?next=${next}`} className="rounded border px-4 py-2">Create account</Link>
           </div>
         </section>
@@ -75,7 +75,7 @@ export default async function InvitationAcceptancePage({ searchParams }: Props) 
         {explicitError && <p className="mt-5 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700">{explicitError}</p>}
         <form action={acceptInvitation} className="mt-6">
           <input type="hidden" name="token" value={token} />
-          <button type="submit" className="rounded bg-black px-5 py-3 font-medium text-white">Accept invitation</button>
+          <button type="submit" className="rounded bg-primary hover:bg-primary-hover px-5 py-3 font-medium text-white">Accept invitation</button>
         </form>
         <p className="mt-4 text-xs text-gray-500">Invitations expire after 7 days and can only be used once by the invited email address.</p>
       </section>

@@ -200,7 +200,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
         <Link href={`/families/${familyId}`} className="text-sm underline">
           Back to {family.name}
         </Link>
-        <Link href={`/families/${familyId}/events/new${selectedPersonId ? `?personId=${selectedPersonId}` : ""}`} className="rounded bg-black px-4 py-2 text-sm text-white">
+        <Link href={`/families/${familyId}/events/new${selectedPersonId ? `?personId=${selectedPersonId}` : ""}`} className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white">
           Add Event
         </Link>
       </div>
