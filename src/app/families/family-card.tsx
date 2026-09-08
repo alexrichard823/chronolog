@@ -12,11 +12,12 @@ type FamilyCardProps = {
 
 function FamilyCardContent({ name, peopleCount, memberCount }: Omit<FamilyCardProps, "id">) {
   const { pending } = useLinkStatus();
+  const familyName = /\bfamily\b/i.test(name) ? name : `${name} Family`;
 
   return (
     <Card className="flex items-center justify-between gap-4 p-5 sm:p-6" data-pending={pending}>
       <div className="min-w-0">
-        <h2 className="break-words text-2xl font-semibold">{name}</h2>
+        <h2 className="break-words text-2xl font-semibold">{familyName}</h2>
         <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-strong">
           <span>{peopleCount.toLocaleString("en-US")} {peopleCount === 1 ? "person" : "people"}</span>
           <span>{memberCount.toLocaleString("en-US")} {memberCount === 1 ? "member" : "members"}</span>
@@ -34,7 +35,7 @@ function FamilyCardContent({ name, peopleCount, memberCount }: Omit<FamilyCardPr
           </svg>
         )}
       </span>
-      <span className="sr-only" role="status">{pending ? `Opening ${name}…` : ""}</span>
+      <span className="sr-only" role="status">{pending ? `Opening ${familyName}…` : ""}</span>
     </Card>
   );
 }
