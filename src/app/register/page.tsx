@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { safeInternalPath } from "@/lib/auth/safe-next";
 import { createClient } from "@/lib/supabase/client";
+import { Button, Field, Input } from "@/components/ui";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -56,31 +57,33 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md">
-        <h1 className="mb-2 text-3xl font-semibold">Create your account</h1>
-        <p className="mb-6 text-gray-600">
-          Already have an account? <Link href="/login" className="font-medium underline">Log in</Link>.
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 p-6 text-gray-950">
+      <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-surface p-6 shadow-sm sm:p-10">
+        <div className="family-brand mb-6 w-full justify-center">
+          <span className="family-brand-mark" aria-hidden="true">C</span>
+          <span>Chronolog</span>
+        </div>
+        <h1 className="mb-2 text-center text-3xl font-semibold tracking-tight">Create your account</h1>
+        <p className="mb-8 text-center leading-6 text-gray-600">
+          Already have an account? <Link href="/login" className="font-medium text-primary underline underline-offset-4 hover:text-primary-hover">Log in</Link>.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="mb-1 block">Email</label>
-            <input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required className="w-full rounded border px-3 py-2" />
-          </div>
-          <div>
-            <label htmlFor="password" className="mb-1 block">Password</label>
-            <input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={12} className="w-full rounded border px-3 py-2" />
-          </div>
-          <button type="submit" disabled={loading} className="w-full rounded bg-black px-4 py-2 text-white disabled:opacity-50">
+          <Field htmlFor="email" label="Email">
+            <Input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
+          </Field>
+          <Field htmlFor="password" label="Password">
+            <Input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={12} />
+          </Field>
+          <Button type="submit" disabled={loading} size="lg" className="ui-button-feedback w-full">
             {loading ? "Creating account..." : "Create account"}
-          </button>
+          </Button>
         </form>
         {message && (
-          <div className="mt-4 space-y-2">
+          <div className="mt-4 space-y-2 break-words text-sm leading-6 text-gray-600">
             <p>{message}</p>
             {existingAccount && (
-              <Link href="/login" className="inline-block font-medium underline">Go to login</Link>
+              <Link href="/login" className="inline-block font-medium text-primary underline underline-offset-4 hover:text-primary-hover">Go to login</Link>
             )}
           </div>
         )}
