@@ -52,6 +52,9 @@ export default function LoginPage() {
           <Field htmlFor="password" label="Password">
             <Input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
           </Field>
+          <div className="text-right">
+            <Link href="/forgot-password" className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4 hover:text-primary-hover">Forgot password?</Link>
+          </div>
           <Button type="submit" disabled={loading} size="lg" className="ui-button-feedback w-full">
             {loading ? "Logging in..." : "Log in"}
           </Button>
