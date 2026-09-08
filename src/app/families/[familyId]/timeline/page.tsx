@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { MediaPreview } from "@/components/media-preview";
+import { NavigationButtonLink } from "@/components/navigation-button-link";
+import { Badge, Card, PageContainer } from "@/components/ui";
 import { createSignedMediaMap, type MediaRecord } from "@/lib/media";
+import { readableEventType, timelineHref } from "@/lib/timeline-filters";
 import { createClient } from "@/lib/supabase/server";
+import { TimelineFilters } from "./timeline-filters";
+import { TimelineIcon } from "./timeline-icon";
+import "./timeline.css";
 
 const PAGE_SIZE = 25;
 
@@ -38,19 +44,6 @@ function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
 }
 
-function readableType(value: string) {
-  return value.replaceAll("_", " ");
-}
-
-function timelineHref(familyId: string, personId: string, eventType: string, page: number) {
-  const params = new URLSearchParams();
-  if (personId) params.set("person", personId);
-  if (eventType) params.set("type", eventType);
-  if (page > 1) params.set("page", String(page));
-  const query = params.toString();
-  return `/families/${familyId}/timeline${query ? `?${query}` : ""}`;
-}
-
 export default async function TimelinePage({ params, searchParams }: TimelinePageProps) {
   const { familyId } = await params;
   const requested = await searchParams;
@@ -61,14 +54,18 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [familyResult, peopleResult, eventTypesResult] = await Promise.all([
+  const [familyResult, peopleResult, eventTypesResult, membershipResult] = await Promise.all([
     supabase.from("families").select("id, name").eq("id", familyId).maybeSingle(),
     supabase.from("people").select("id, display_name").eq("family_id", familyId).order("display_name"),
     supabase.from("events").select("event_type").eq("family_id", familyId).order("event_type").limit(1000),
+    supabase.from("family_memberships").select("role").eq("family_id", familyId).eq("user_id", user.id).maybeSingle(),
   ]);
 
   const family = familyResult.data;
-  if (familyResult.error || !family) notFound();
+  if (familyResult.error || !family || membershipResult.error || !membershipResult.data) notFound();
+  const canEdit = ["owner", "admin", "editor"].includes(membershipResult.data.role);
+
+  if (peopleResult.error || eventTypesResult.error) throw new Error("Unable to load timeline filters. Please try again.");
 
   const people = (peopleResult.data ?? []) as FamilyPerson[];
   const personById = new Map(people.map((person) => [person.id, person]));
@@ -85,11 +82,12 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
 
   let personEventIds: string[] | null = null;
   if (selectedPersonId) {
-    const { data: personEventLinks } = await supabase
+    const { data: personEventLinks, error: personEventsError } = await supabase
       .from("event_people")
       .select("event_id")
       .eq("family_id", familyId)
       .eq("person_id", selectedPersonId);
+    if (personEventsError) throw new Error("Unable to load this person’s timeline. Please try again.");
     personEventIds = (personEventLinks ?? []).map((row) => row.event_id);
   }
 
@@ -116,7 +114,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
       .range(start, end);
 
     if (eventsResult.error) {
-      console.error("Timeline event query failed", eventsResult.error);
+      throw new Error("Unable to load timeline events. Please try again.");
     } else {
       events = (eventsResult.data ?? []) as TimelineEvent[];
       eventCount = eventsResult.count ?? events.length;
@@ -194,171 +192,122 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
   const firstShown = eventCount === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
   const lastShown = Math.min(page * PAGE_SIZE, eventCount);
 
+  const addEventHref = `/families/${familyId}/events/new${selectedPersonId ? `?personId=${selectedPersonId}` : ""}`;
+  const hasFilters = Boolean(selectedPersonId || selectedEventType);
+
   return (
-    <main className="mx-auto w-full max-w-5xl p-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href={`/families/${familyId}`} className="text-sm underline">
-          Back to {family.name}
-        </Link>
-        <Link href={`/families/${familyId}/events/new${selectedPersonId ? `?personId=${selectedPersonId}` : ""}`} className="rounded bg-primary hover:bg-primary-hover px-4 py-2 text-sm text-white">
-          Add Event
-        </Link>
-      </div>
-
-      <section className="mt-6 rounded-xl border bg-surface p-6">
-        <p className="text-sm font-medium uppercase tracking-wide text-gray-500">Family archive</p>
-        <h1 className="mt-1 text-3xl font-semibold">Family Timeline</h1>
-        <p className="mt-2 text-gray-600">
-          Events are shown in chronological order while preserving approximate, ranged, and unknown dates as entered.
-        </p>
-      </section>
-
-      <section className="mt-6 rounded-xl border bg-surface p-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold">Filter timeline</h2>
-            <p className="mt-1 text-sm text-gray-500">Narrow the family history by person or event type.</p>
+    <main className="py-6 sm:py-8">
+      <PageContainer width="wide" className="min-w-0">
+        <header className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <Link href={`/families/${familyId}`} className="inline-flex min-h-11 items-center text-sm font-medium text-primary hover:underline">{family.name} family</Link>
+            <h1 className="text-3xl font-semibold tracking-tight">Family timeline</h1>
+            <p className="mt-2 max-w-2xl text-muted">Your family’s moments, connected through time.</p>
           </div>
-          {(selectedPersonId || selectedEventType) && (
-            <Link href={`/families/${familyId}/timeline`} className="text-sm underline">
-              Clear filters
-            </Link>
-          )}
-        </div>
+          {canEdit && <NavigationButtonLink href={addEventHref} variant="secondary"><span aria-hidden="true">+</span> Add event</NavigationButtonLink>}
+        </header>
 
-        <form method="get" className="mt-5 grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
-          <div>
-            <label htmlFor="person" className="block text-sm font-medium">Person</label>
-            <select id="person" name="person" defaultValue={selectedPersonId} className="mt-2 w-full rounded border px-3 py-2">
-              <option value="">All people</option>
-              {people.map((person) => <option key={person.id} value={person.id}>{person.display_name}</option>)}
-            </select>
+        <TimelineFilters familyId={familyId} people={people} eventTypes={availableEventTypes} selectedPersonId={selectedPersonId} selectedEventType={selectedEventType} page={page} />
+
+        <section className="mt-8" aria-labelledby="timeline-results-heading">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div className="min-w-0">
+              <h2 id="timeline-results-heading" className="break-words text-xl font-semibold">{activePerson ? `${activePerson.display_name}’s timeline` : "Family events"}</h2>
+              <p className="mt-1 text-sm text-muted" role="status">
+                {eventCount > 0 ? `Showing ${firstShown}–${lastShown} of ${eventCount} event${eventCount === 1 ? "" : "s"}` : "No events to show"}
+              </p>
+            </div>
+            {events.length > 0 && <span className="flex items-center gap-2 text-sm text-muted"><TimelineIcon name="timeline" className="ui-icon-sm" /> Oldest to newest</span>}
           </div>
-          <div>
-            <label htmlFor="type" className="block text-sm font-medium">Event type</label>
-            <select id="type" name="type" defaultValue={selectedEventType} className="mt-2 w-full rounded border px-3 py-2 capitalize">
-              <option value="">All event types</option>
-              {availableEventTypes.map((eventType) => <option key={eventType} value={eventType}>{readableType(eventType)}</option>)}
-            </select>
-          </div>
-          <button type="submit" className="rounded border px-4 py-2">Apply filters</button>
-        </form>
-      </section>
 
-      <section className="mt-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-semibold">{activePerson ? `${activePerson.display_name}'s timeline` : "Family events"}</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              {eventCount > 0 ? `Showing ${firstShown}–${lastShown} of ${eventCount} event${eventCount === 1 ? "" : "s"}.` : "No events to show."}
-            </p>
-          </div>
-          {selectedEventType && <p className="text-sm capitalize text-gray-500">Type: {readableType(selectedEventType)}</p>}
-        </div>
+          {events.length ? (
+            <div className="relative mt-6 space-y-5 pl-6 sm:pl-8">
+              <span aria-hidden="true" className="absolute bottom-8 left-1.5 top-8 w-px bg-primary/25" />
+              {events.map((event, index) => {
+                const linkedPeople = (peopleIdsByEvent.get(event.id) ?? [])
+                  .map((id) => personById.get(id)).filter((person): person is FamilyPerson => Boolean(person));
+                const linkedStories = (storyIdsByEvent.get(event.id) ?? [])
+                  .map((id) => storyById.get(id)).filter((story): story is TimelineStory => Boolean(story));
+                const linkedMedia = (mediaIdsByEvent.get(event.id) ?? [])
+                  .map((id) => mediaById.get(id)).filter((item): item is MediaRecord => Boolean(item));
+                const previewStory = linkedStories[0] ?? null;
+                const previewMedia = previewMediaByEvent.get(event.id) ?? null;
+                const dateLabel = event.date_precision === "unknown" ? "Date unknown"
+                  : event.date_precision === "range" ? (event.date_is_uncertain ? "Approximate range" : "Date range")
+                  : event.date_is_uncertain || event.date_precision === "approximate" ? "Approximate date" : null;
+                const firstUndated = event.date_precision === "unknown" && (index === 0 || events[index - 1].date_precision !== "unknown");
 
-        {events.length ? (
-          <div className="mt-6 space-y-6 border-l pl-6">
-            {events.map((event) => {
-              const linkedPeople = (peopleIdsByEvent.get(event.id) ?? [])
-                .map((id) => personById.get(id))
-                .filter((person): person is FamilyPerson => Boolean(person));
-              const linkedStories = (storyIdsByEvent.get(event.id) ?? [])
-                .map((id) => storyById.get(id))
-                .filter((story): story is TimelineStory => Boolean(story));
-              const linkedMedia = (mediaIdsByEvent.get(event.id) ?? [])
-                .map((id) => mediaById.get(id))
-                .filter((item): item is MediaRecord => Boolean(item))
-                .sort((a, b) => b.created_at.localeCompare(a.created_at));
-              const previewStory = linkedStories[0] ?? null;
-              const previewMedia = previewMediaByEvent.get(event.id) ?? null;
-
-              return (
-                <article key={event.id} className="relative rounded-xl border bg-white p-5">
-                  <span className="absolute -left-[1.9rem] top-6 h-3 w-3 rounded-full border bg-white" />
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{readableType(event.event_type)}</p>
-                      <h3 className="mt-1 text-xl font-semibold">
-                        <Link className="underline" href={`/families/${familyId}/events/${event.id}`}>{event.title}</Link>
+                return (
+                  <div key={event.id}>
+                    {firstUndated && <h3 className="mb-4 mt-8 text-sm font-semibold text-muted-strong">Undated events</h3>}
+                    <article className="ui-card timeline-card relative min-w-0 p-4 sm:p-6">
+                      <span aria-hidden="true" className="absolute -left-6 top-7 h-3 w-3 rounded-full border-2 border-primary bg-background sm:-left-8" />
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <Badge variant="primary">{readableEventType(event.event_type)}</Badge>
+                        {dateLabel && <Badge>{dateLabel}</Badge>}
+                      </div>
+                      <h3 className="mt-3 break-words text-xl font-semibold leading-snug">
+                        <Link className="text-foreground hover:text-primary hover:underline" href={`/families/${familyId}/events/${event.id}`}>{event.title}</Link>
                       </h3>
-                      <p className="mt-2 text-sm text-gray-600">
-                        {event.date_display || "Date unknown"}
-                        {event.place_name ? ` · ${event.place_name}` : ""}
-                      </p>
-                    </div>
-                    {(event.date_is_uncertain || event.date_precision === "unknown") && (
-                      <span className="w-fit rounded-full border px-2 py-1 text-xs text-gray-600">
-                        {event.date_precision === "unknown" ? "Date unknown" : "Approximate date"}
-                      </span>
-                    )}
+                      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-strong">
+                        <span className="flex items-start gap-2"><TimelineIcon name="calendar" className="ui-icon-sm mt-0.5 text-primary" />{event.date_display || "Date unknown"}</span>
+                        {event.place_name && <span className="flex min-w-0 items-start gap-2"><TimelineIcon name="place" className="ui-icon-sm mt-0.5 text-primary" /><span className="break-words">{event.place_name}</span></span>}
+                      </div>
+                      {event.description && <p className="mt-4 whitespace-pre-wrap break-words leading-relaxed text-muted-strong">{event.description}</p>}
+
+                      <div className="mt-5 grid gap-5 border-t border-border pt-5 lg:grid-cols-3">
+                        <div className="min-w-0">
+                          <h4 className="flex items-center gap-2 text-sm font-semibold"><TimelineIcon name="people" className="ui-icon-sm text-primary" /> People</h4>
+                          {linkedPeople.length ? <div className="mt-3 flex flex-wrap gap-2">
+                            {linkedPeople.map((person) => <Link key={person.id} href={`/families/${familyId}/people/${person.id}`}
+                              className="inline-flex min-h-11 max-w-full items-center gap-2 rounded-full border border-primary/20 bg-primary-soft px-3 py-2 text-sm font-medium text-primary transition-colors hover:border-primary active:bg-primary/15">
+                              <span className="break-words">{person.display_name}</span>
+                            </Link>)}
+                          </div> : <p className="mt-3 text-sm text-muted">No people linked.</p>}
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="flex items-center gap-2 text-sm font-semibold"><TimelineIcon name="story" className="ui-icon-sm text-primary" /> Story</h4>
+                          {previewStory ? <div className="mt-3">
+                            <Link className="inline-block min-h-11 break-words py-2 font-medium text-primary hover:underline" href={`/families/${familyId}/stories/${previewStory.id}`}>{previewStory.title}</Link>
+                            <p className="line-clamp-3 break-words text-sm leading-relaxed text-muted-strong">{previewStory.content}</p>
+                            {linkedStories.length > 1 && <p className="mt-2 text-xs text-muted">+{linkedStories.length - 1} more linked {linkedStories.length === 2 ? "story" : "stories"}</p>}
+                          </div> : <p className="mt-3 text-sm text-muted">No story linked.</p>}
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="flex items-center gap-2 text-sm font-semibold"><TimelineIcon name="media" className="ui-icon-sm text-primary" /> Media</h4>
+                          {previewMedia ? <div className="mt-3">
+                            {previewMedia.media_type === "image" ? <MediaPreview mediaType="image" signedUrl={signedByPath.get(previewMedia.storage_path) ?? null} title={previewMedia.title} compact />
+                              : <div className="flex h-24 items-center justify-center gap-2 rounded-md bg-primary-soft text-sm font-medium text-primary"><TimelineIcon name="media" />{readableEventType(previewMedia.media_type)}</div>}
+                            <Link className="mt-1 inline-block min-h-11 break-words py-2 font-medium text-primary hover:underline" href={`/families/${familyId}/media/${previewMedia.id}`}>{previewMedia.title}</Link>
+                            {linkedMedia.length > 1 && <p className="mt-1 text-xs text-muted">+{linkedMedia.length - 1} more linked media {linkedMedia.length === 2 ? "item" : "items"}</p>}
+                          </div> : <p className="mt-3 text-sm text-muted">No media linked.</p>}
+                        </div>
+                      </div>
+                      <div className="mt-5 flex justify-end border-t border-border pt-3">
+                        <NavigationButtonLink variant="ghost" href={`/families/${familyId}/events/${event.id}`}>View event <TimelineIcon name="arrow" className="ui-icon-sm" /></NavigationButtonLink>
+                      </div>
+                    </article>
                   </div>
+                );
+              })}
+            </div>
+          ) : (
+            <Card className="mt-6 p-6 text-center sm:p-8">
+              <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary-soft text-primary"><TimelineIcon name={hasFilters ? "search" : "timeline"} /></span>
+              <h3 className="mt-4 text-lg font-semibold">{hasFilters ? "No matching moments yet" : "Every family has a story to tell"}</h3>
+              <p className="mt-2 text-muted">{hasFilters ? "Try another person or event type, or clear your filters to see every event." : "Your family’s events will appear here as they’re added."}</p>
+              {hasFilters ? <NavigationButtonLink variant="secondary" href={timelineHref(familyId)} className="mt-5">Clear filters</NavigationButtonLink>
+                : canEdit && <NavigationButtonLink href={addEventHref} className="mt-5">Add the first event</NavigationButtonLink>}
+            </Card>
+          )}
 
-                  {event.description && <p className="mt-4 whitespace-pre-wrap text-gray-700">{event.description}</p>}
-
-                  <div className="mt-5 grid gap-5 lg:grid-cols-3">
-                    <div>
-                      <h4 className="text-sm font-semibold">People</h4>
-                      {linkedPeople.length ? (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {linkedPeople.map((person) => (
-                            <Link key={person.id} href={`/families/${familyId}/people/${person.id}`} className="rounded-full border px-3 py-1 text-sm hover:bg-gray-50">
-                              {person.display_name}
-                            </Link>
-                          ))}
-                        </div>
-                      ) : <p className="mt-2 text-sm text-gray-500">No people linked.</p>}
-                    </div>
-
-                    <div>
-                      <h4 className="text-sm font-semibold">Story</h4>
-                      {previewStory ? (
-                        <div className="mt-2 rounded-lg border bg-surface p-3">
-                          <Link className="font-medium underline" href={`/families/${familyId}/stories/${previewStory.id}`}>{previewStory.title}</Link>
-                          <p className="mt-2 line-clamp-3 text-sm text-gray-600">{previewStory.content}</p>
-                          {linkedStories.length > 1 && <p className="mt-2 text-xs text-gray-500">+{linkedStories.length - 1} more linked {linkedStories.length - 1 === 1 ? "story" : "stories"}</p>}
-                        </div>
-                      ) : <p className="mt-2 text-sm text-gray-500">No story linked.</p>}
-                    </div>
-
-                    <div>
-                      <h4 className="text-sm font-semibold">Media</h4>
-                      {previewMedia ? (
-                        <div className="mt-2 rounded-lg border bg-surface p-3">
-                          {previewMedia.media_type === "image" ? (
-                            <MediaPreview mediaType="image" signedUrl={signedByPath.get(previewMedia.storage_path) ?? null} title={previewMedia.title} compact />
-                          ) : (
-                            <div className="flex h-24 items-center justify-center rounded-lg bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
-                              {previewMedia.media_type}
-                            </div>
-                          )}
-                          <Link className="mt-3 block font-medium underline" href={`/families/${familyId}/media/${previewMedia.id}`}>{previewMedia.title}</Link>
-                          {linkedMedia.length > 1 && <p className="mt-2 text-xs text-gray-500">+{linkedMedia.length - 1} more linked media {linkedMedia.length - 1 === 1 ? "item" : "items"}</p>}
-                        </div>
-                      ) : <p className="mt-2 text-sm text-gray-500">No media linked.</p>}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="mt-6 rounded-xl border bg-surface p-6 text-gray-500">
-            {selectedPersonId || selectedEventType ? "No events match these filters." : "No events have been added to this family yet."}
-          </div>
-        )}
-
-        {eventCount > PAGE_SIZE && (
-          <nav className="mt-6 flex items-center justify-between gap-4" aria-label="Timeline pagination">
-            {page > 1 ? (
-              <Link href={timelineHref(familyId, selectedPersonId, selectedEventType, page - 1)} className="rounded border px-4 py-2 text-sm">Previous</Link>
-            ) : <span />}
-            <p className="text-sm text-gray-500">Page {page} of {totalPages}</p>
-            {page < totalPages ? (
-              <Link href={timelineHref(familyId, selectedPersonId, selectedEventType, page + 1)} className="rounded border px-4 py-2 text-sm">Next</Link>
-            ) : <span />}
-          </nav>
-        )}
-      </section>
+          {eventCount > PAGE_SIZE && <nav className="mt-6 flex flex-wrap items-center justify-between gap-3" aria-label="Timeline pagination">
+            {page > 1 ? <NavigationButtonLink variant="secondary" href={timelineHref(familyId, selectedPersonId, selectedEventType, page - 1)}>Previous</NavigationButtonLink> : <span />}
+            <p className="text-sm text-muted">Page {page} of {totalPages}</p>
+            {page < totalPages ? <NavigationButtonLink variant="secondary" href={timelineHref(familyId, selectedPersonId, selectedEventType, page + 1)}>Next</NavigationButtonLink> : <span />}
+          </nav>}
+        </section>
+      </PageContainer>
     </main>
   );
 }
